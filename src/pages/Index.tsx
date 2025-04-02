@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -17,8 +16,8 @@ const Index = () => {
               QuerifyAI provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
             </p>
             
-            {/* New tagline added here */}
-            <div className="text-xl text-white/90 max-w-2xl mb-8 px-4">
+            {/* Updated tagline with larger, black text */}
+            <div className="text-2xl md:text-3xl font-semibold text-black max-w-2xl mb-8 px-4">
               Are you stuck building an automation? Is your HTTP request node just not working? Ask the AI automation guru!
             </div>
             
