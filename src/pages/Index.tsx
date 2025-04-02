@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -9,31 +8,15 @@ const Index = () => {
       {/* Hero Section */}
       <section className="gradient-bg hero-pattern py-16 md:py-24">
         <div className="container max-w-screen-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
-                Answer Your <br className="hidden md:inline" />
-                AI Automation <br className="hidden md:inline" />
-                Questions
-              </h1>
-              <p className="text-lg md:text-xl text-white/80 max-w-md">
-                QuerifyAI provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/ask">
-                  <Button className="bg-white text-querify-blue hover:bg-gray-100 text-md px-8 py-6">
-                    Ask Your Questions
-                  </Button>
-                </Link>
-                <Link to="/about">
-                  <Button variant="outline" className="border-white text-white hover:bg-white/10 text-md px-8 py-6">
-                    Learn More
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            <div className="flex justify-center">
+          <div className="flex flex-col items-center text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+              Answer Your AI Automation Questions
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 max-w-md mb-12">
+              QuerifyAI provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
+            </p>
+            
+            <div className="w-full max-w-2xl mb-12">
               <div className="p-2 bg-white/10 backdrop-blur rounded-xl shadow-lg">
                 <img 
                   src="/lovable-uploads/f9322daa-f54e-4447-b957-403257ba769d.png" 
@@ -41,6 +24,19 @@ const Index = () => {
                   className="w-full h-auto rounded-lg"
                 />
               </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/ask" className="w-full sm:w-auto">
+                <Button className="bg-white text-querify-blue hover:bg-gray-100 text-lg px-10 py-7 w-full sm:w-auto">
+                  Ask Your Questions
+                </Button>
+              </Link>
+              <Link to="/about" className="w-full sm:w-auto">
+                <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-10 py-7 w-full sm:w-auto">
+                  Learn More
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
