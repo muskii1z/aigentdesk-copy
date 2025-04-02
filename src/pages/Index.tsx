@@ -9,10 +9,10 @@ const Index = () => {
       <section className="gradient-bg hero-pattern py-16 md:py-24">
         <div className="container max-w-screen-xl">
           <div className="flex flex-col items-center text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black mb-6">
               Answer Your AI Automation Questions
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-md mb-12">
+            <p className="text-lg md:text-xl text-black max-w-md mb-12">
               QuerifyAI provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
             </p>
             
