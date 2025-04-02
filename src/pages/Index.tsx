@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -15,6 +16,11 @@ const Index = () => {
             <p className="text-lg md:text-xl text-white/80 max-w-md mb-12">
               QuerifyAI provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
             </p>
+            
+            {/* New tagline added here */}
+            <div className="text-xl text-white/90 max-w-2xl mb-8 px-4">
+              Are you stuck building an automation? Is your HTTP request node just not working? Ask the AI automation guru!
+            </div>
             
             <div className="w-full max-w-2xl mb-12">
               <div className="p-2 bg-white/10 backdrop-blur rounded-xl shadow-lg">
