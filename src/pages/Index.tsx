@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -20,7 +21,7 @@ const Index = () => {
             </div>
             
             <div className="text-lg md:text-xl font-medium bg-querify-blue/10 text-querify-blue py-3 px-6 rounded-full mb-8 inline-block">
-              Powered by AIgentic Bros
+              Powered by AIgentic Bros, built for doers
             </div>
             
             <div className="w-full max-w-2xl mb-12">
@@ -56,7 +57,7 @@ const Index = () => {
             Start asking your AI automation questions today and transform your business.
           </p>
           <div className="mb-6 font-medium text-querify-blue">
-            Powered by AIgentic Bros
+            Powered by AIgentic Bros, built for doers
           </div>
           <Link to="/ask">
             <Button className="bg-querify-blue hover:bg-querify-lightBlue text-white px-8 py-6">
