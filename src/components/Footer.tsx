@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
               <span className="font-bold text-xl text-querify-blue">AIgentDesk</span>
             </Link>
             <div className="bg-querify-blue/10 p-2 rounded text-querify-blue font-medium inline-block">
-              Powered by AIGENTIC Bros, built for doers
+              Powered by AIgentic Bros, built for doers
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
               AIgentDesk helps you answer your AI automation questions with accurate, helpful responses.

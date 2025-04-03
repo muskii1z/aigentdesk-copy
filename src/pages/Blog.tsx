@@ -40,7 +40,7 @@ const BlogPage = () => {
       <h1 className="text-3xl font-bold mb-2">AIgentDesk: AI Automation Blog</h1>
       
       <div className="bg-querify-blue/10 p-3 rounded-lg inline-block mb-6">
-        <p className="text-querify-blue font-medium">Powered by AIGENTIC Bros, built for doers</p>
+        <p className="text-querify-blue font-medium">Powered by AIgentic Bros, built for doers</p>
       </div>
       
       <p className="text-muted-foreground mb-8">

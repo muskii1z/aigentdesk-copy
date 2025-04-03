@@ -10,7 +10,7 @@ const About = () => {
         <h1 className="text-3xl font-bold mb-6">About AIgentDesk</h1>
         
         <div className="bg-querify-blue/10 p-4 rounded-lg text-center mb-8">
-          <p className="text-lg font-medium text-querify-blue">Powered by AIGENTIC Bros, built for doers</p>
+          <p className="text-lg font-medium text-querify-blue">Powered by AIgentic Bros, built for doers</p>
         </div>
         
         <div className="prose max-w-none">
