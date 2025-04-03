@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -12,14 +13,14 @@ const Index = () => {
               Answer Your AI Automation Questions
             </h1>
             <p className="text-lg md:text-xl text-black max-w-md mb-12">
-              Aigentdesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
+              AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
             </p>
             
             <div className="text-2xl md:text-3xl font-semibold text-black max-w-2xl mb-8 px-4">
               Are you stuck building an automation? Is your HTTP request node just not working? Ask the AI automation guru!
             </div>
             
-            <div className="text-sm text-muted-foreground mb-4">
+            <div className="text-lg md:text-xl font-medium bg-querify-blue/10 text-querify-blue py-3 px-6 rounded-full mb-8 inline-block">
               Powered by AIGENTIC Bros, built for doers
             </div>
             
@@ -27,7 +28,7 @@ const Index = () => {
               <div className="p-2 bg-white/10 backdrop-blur rounded-xl shadow-lg">
                 <img 
                   src="/lovable-uploads/f9322daa-f54e-4447-b957-403257ba769d.png" 
-                  alt="QuerifyAI interface" 
+                  alt="AIgentDesk interface" 
                   className="w-full h-auto rounded-lg"
                 />
               </div>
@@ -51,7 +52,7 @@ const Index = () => {
 
       <section className="py-16 bg-white">
         <div className="container max-w-screen-xl">
-          <h2 className="text-3xl font-bold text-center mb-12">How QuerifyAI Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">How AIgentDesk Works</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-querify-gray p-6 rounded-lg">
@@ -93,6 +94,9 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Start asking your AI automation questions today and transform your business.
           </p>
+          <div className="mb-6 font-medium text-querify-blue">
+            Powered by AIGENTIC Bros, built for doers
+          </div>
           <Link to="/ask">
             <Button className="bg-querify-blue hover:bg-querify-lightBlue text-white px-8 py-6">
               Get Started Now

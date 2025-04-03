@@ -44,7 +44,12 @@ const RegistrationForm: React.FC = () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    registerUser(values);
+    // Ensure all required fields are provided before calling registerUser
+    registerUser({
+      fullName: values.fullName,
+      email: values.email,
+      phone: values.phone
+    });
     setIsLoading(false);
   }
 

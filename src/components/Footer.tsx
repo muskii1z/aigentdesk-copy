@@ -9,11 +9,13 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div className="space-y-4">
             <Link to="/" className="inline-block">
-              <span className="font-bold text-xl text-querify-blue">Aigentdesk</span>
+              <span className="font-bold text-xl text-querify-blue">AIgentDesk</span>
             </Link>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Aigentdesk helps you answer your AI automation questions with accurate, helpful responses. 
+            <div className="bg-querify-blue/10 p-2 rounded text-querify-blue font-medium inline-block">
               Powered by AIGENTIC Bros, built for doers
+            </div>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              AIgentDesk helps you answer your AI automation questions with accurate, helpful responses.
             </p>
           </div>
           
@@ -58,7 +60,7 @@ const Footer: React.FC = () => {
         
         <div className="mt-8 pt-8 border-t border-border/40 flex flex-col md:flex-row justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} QuerifyAI. All rights reserved.
+            © {new Date().getFullYear()} AIgentDesk. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link to="#" className="text-xs text-muted-foreground hover:text-querify-blue">

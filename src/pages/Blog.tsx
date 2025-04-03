@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -36,9 +37,14 @@ const BlogPage = () => {
 
   return (
     <div className="container max-w-screen-xl py-12">
-      <h1 className="text-3xl font-bold mb-2">Aigentdesk: AI Automation Blog</h1>
+      <h1 className="text-3xl font-bold mb-2">AIgentDesk: AI Automation Blog</h1>
+      
+      <div className="bg-querify-blue/10 p-3 rounded-lg inline-block mb-6">
+        <p className="text-querify-blue font-medium">Powered by AIGENTIC Bros, built for doers</p>
+      </div>
+      
       <p className="text-muted-foreground mb-8">
-        Insights, tips, and trends in AI automation. Powered by AIGENTIC Bros, built for doers.
+        Insights, tips, and trends in AI automation.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -46,7 +52,7 @@ const BlogPage = () => {
           <Card key={post.id} className="overflow-hidden">
             <Link to={`/blog/${post.id}`}>
               <div className="h-48 bg-querify-gray flex items-center justify-center">
-                <div className="text-3xl font-bold text-querify-blue">QuerifyAI</div>
+                <div className="text-3xl font-bold text-querify-blue">AIgentDesk</div>
               </div>
             </Link>
             <CardHeader className="p-4 pb-0">
