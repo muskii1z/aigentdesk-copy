@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -21,7 +20,7 @@ const Index = () => {
             </div>
             
             <div className="text-lg md:text-xl font-medium bg-querify-blue/10 text-querify-blue py-3 px-6 rounded-full mb-8 inline-block">
-              Powered by AIGENTIC Bros, built for doers
+              Powered by AIgentic Bros
             </div>
             
             <div className="w-full max-w-2xl mb-12">
@@ -50,44 +49,6 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
-        <div className="container max-w-screen-xl">
-          <h2 className="text-3xl font-bold text-center mb-12">How AIgentDesk Works</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-querify-gray p-6 rounded-lg">
-              <div className="bg-querify-blue h-12 w-12 rounded-full flex items-center justify-center text-white font-bold mb-4">
-                1
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Ask Your Question</h3>
-              <p className="text-muted-foreground">
-                Simply type your AI automation question into our easy-to-use interface.
-              </p>
-            </div>
-            
-            <div className="bg-querify-gray p-6 rounded-lg">
-              <div className="bg-querify-blue h-12 w-12 rounded-full flex items-center justify-center text-white font-bold mb-4">
-                2
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Get Expert Answers</h3>
-              <p className="text-muted-foreground">
-                Our AI analyzes your question and provides accurate, helpful responses.
-              </p>
-            </div>
-            
-            <div className="bg-querify-gray p-6 rounded-lg">
-              <div className="bg-querify-blue h-12 w-12 rounded-full flex items-center justify-center text-white font-bold mb-4">
-                3
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Implement Solutions</h3>
-              <p className="text-muted-foreground">
-                Use our guidance to implement effective AI automation in your business.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="py-16 bg-querify-gray">
         <div className="container max-w-screen-xl text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Automate with AI?</h2>
@@ -95,7 +56,7 @@ const Index = () => {
             Start asking your AI automation questions today and transform your business.
           </p>
           <div className="mb-6 font-medium text-querify-blue">
-            Powered by AIGENTIC Bros, built for doers
+            Powered by AIgentic Bros
           </div>
           <Link to="/ask">
             <Button className="bg-querify-blue hover:bg-querify-lightBlue text-white px-8 py-6">
