@@ -9,10 +9,11 @@ const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div className="space-y-4">
             <Link to="/" className="inline-block">
-              <span className="font-bold text-xl text-querify-blue">QuerifyAI</span>
+              <span className="font-bold text-xl text-querify-blue">Aigentdesk</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              QuerifyAI helps you answer your AI automation questions with accurate, helpful responses.
+              Aigentdesk helps you answer your AI automation questions with accurate, helpful responses. 
+              Powered by AIGENTIC Bros, built for doers
             </p>
           </div>
           

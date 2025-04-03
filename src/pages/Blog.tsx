@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -37,9 +36,9 @@ const BlogPage = () => {
 
   return (
     <div className="container max-w-screen-xl py-12">
-      <h1 className="text-3xl font-bold mb-2">AI Automation Blog</h1>
+      <h1 className="text-3xl font-bold mb-2">Aigentdesk: AI Automation Blog</h1>
       <p className="text-muted-foreground mb-8">
-        Insights, tips, and trends in AI automation to help you implement intelligent solutions.
+        Insights, tips, and trends in AI automation. Powered by AIGENTIC Bros, built for doers.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

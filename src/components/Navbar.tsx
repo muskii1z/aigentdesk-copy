@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/30">
       <div className="container flex h-16 max-w-screen-xl items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <div className="font-bold text-2xl text-querify-blue">QuerifyAI</div>
+          <div className="font-bold text-2xl text-querify-blue">Aigentdesk</div>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">

@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 const Index = () => {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
       <section className="gradient-bg hero-pattern py-16 md:py-24">
         <div className="container max-w-screen-xl">
           <div className="flex flex-col items-center text-center">
@@ -13,12 +12,15 @@ const Index = () => {
               Answer Your AI Automation Questions
             </h1>
             <p className="text-lg md:text-xl text-black max-w-md mb-12">
-              QuerifyAI provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
+              Aigentdesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions.
             </p>
             
-            {/* Updated tagline with larger, black text */}
             <div className="text-2xl md:text-3xl font-semibold text-black max-w-2xl mb-8 px-4">
               Are you stuck building an automation? Is your HTTP request node just not working? Ask the AI automation guru!
+            </div>
+            
+            <div className="text-sm text-muted-foreground mb-4">
+              Powered by AIGENTIC Bros, built for doers
             </div>
             
             <div className="w-full max-w-2xl mb-12">
@@ -47,7 +49,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-16 bg-white">
         <div className="container max-w-screen-xl">
           <h2 className="text-3xl font-bold text-center mb-12">How QuerifyAI Works</h2>
@@ -86,7 +87,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 bg-querify-gray">
         <div className="container max-w-screen-xl text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Automate with AI?</h2>
