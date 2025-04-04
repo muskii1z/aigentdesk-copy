@@ -48,11 +48,13 @@ const QuestionForm: React.FC = () => {
           </div>
         )}
         
-        <PlaceholdersAndVanishInput
-          placeholders={placeholders}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-        />
+        <div className="border-2 border-gray-300 dark:border-gray-600 rounded-full">
+          <PlaceholdersAndVanishInput
+            placeholders={placeholders}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+          />
+        </div>
         
         <div className="mt-1 text-xs text-muted-foreground text-center">
           {isRegistrationRequired ? 

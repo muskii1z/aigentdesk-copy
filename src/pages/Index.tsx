@@ -5,9 +5,15 @@ import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 import { VideoPlayer } from '@/components/ui/video-player';
 import SignUpModal from '@/components/SignUpModal';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
-  const { isOpen, openModal, setIsOpen, redirectUrl } = useSignUpModal();
+  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
+  const navigate = useNavigate();
+
+  const handleAskClick = () => {
+    navigate('/ask');
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -17,7 +23,7 @@ const Index = () => {
         primaryCta={{
           text: "Ask Your Questions",
           href: "/ask",
-          onClick: () => openModal('/ask'),
+          onClick: handleAskClick,
         }}
         secondaryCta={{
           text: "Learn More",
@@ -52,7 +58,7 @@ const Index = () => {
           </div>
           <Button 
             className="bg-querify-blue hover:bg-blue-700 text-white px-8 py-6"
-            onClick={() => openModal('/ask')}
+            onClick={handleAskClick}
           >
             Get Started Now
           </Button>

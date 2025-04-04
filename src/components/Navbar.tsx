@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Menu, { IMenu } from '@/components/ui/menu';
 import SignUpModal from '@/components/SignUpModal';
@@ -46,7 +46,12 @@ const menuItems: IMenu[] = [
 ];
 
 const Navbar: React.FC = () => {
-  const { isOpen, openModal, setIsOpen, redirectUrl } = useSignUpModal();
+  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
+  const navigate = useNavigate();
+
+  const handleAskClick = () => {
+    navigate('/ask');
+  };
 
   return (
     <>
@@ -63,7 +68,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-4">
             <Button 
               className="bg-querify-blue hover:bg-blue-700 text-white"
-              onClick={() => openModal('/ask')}
+              onClick={handleAskClick}
             >
               Ask Questions
             </Button>
