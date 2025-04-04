@@ -2,6 +2,46 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import Menu, { IMenu } from '@/components/ui/menu';
+
+const menuItems: IMenu[] = [
+  {
+    id: 1,
+    title: 'Home',
+    url: '/',
+    dropdown: false,
+  },
+  {
+    id: 2,
+    title: 'About',
+    url: '/about',
+    dropdown: false,
+  },
+  {
+    id: 3,
+    title: 'Products',
+    url: '/products',
+    dropdown: true,
+    items: [
+      {
+        id: 31,
+        title: 'AI Solutions',
+        url: '/products/ai-solutions',
+      },
+      {
+        id: 32,
+        title: 'Automation Tools',
+        url: '/products/automation',
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: 'Blog',
+    url: '/blog',
+    dropdown: false,
+  },
+];
 
 const Navbar: React.FC = () => {
   return (
@@ -11,17 +51,9 @@ const Navbar: React.FC = () => {
           <div className="font-bold text-2xl text-querify-blue">AIgentDesk</div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link to="/" className="text-querify-blue hover:text-blue-700">
-            Home
-          </Link>
-          <Link to="/about" className="text-querify-blue/60 hover:text-blue-700">
-            About
-          </Link>
-          <Link to="/blog" className="text-querify-blue/60 hover:text-blue-700">
-            Blog
-          </Link>
-        </nav>
+        <div className="flex-1 flex justify-center">
+          <Menu list={menuItems} />
+        </div>
 
         <div className="flex items-center gap-4">
           <Link to="/ask">
