@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -29,10 +28,13 @@ const About = () => {
           <h2 className="text-2xl font-bold mt-8 mb-4 text-querify-blue">About Aigentic Bros</h2>
           
           <p className="mb-6 text-querify-blue/90">
-            Aigentic Bros is a pioneering company in the AI automation space, focused on democratizing 
-            artificial intelligence and making it accessible to businesses of all sizes. Founded by a team 
-            of AI enthusiasts and industry experts, we're committed to bridging the gap between complex 
-            technology and practical business applications.
+            Aigentic Bros is on a mission to help local businesses grow using the power of AI — and teach 
+            everyday people how to turn that into real income. We specialize in using AI tools and 
+            automation to simplify marketing, generate leads, and streamline operations for local businesses. 
+            Whether you're a business owner ready to modernize, or an aspiring freelancer looking to build 
+            an AI-powered side hustle, we give you the tools, strategies, and step-by-step playbooks to win 
+            in the new economy. No tech background needed — just a willingness to learn, take action, and 
+            provide real value. Let's build smarter, together.
           </p>
           
           <div className="flex items-center mb-8">
