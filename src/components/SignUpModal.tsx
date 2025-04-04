@@ -89,8 +89,8 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={() => {/* Prevent modal from closing */}}>
+      <DialogContent hideCloseButton>
         <div className="flex flex-col items-center gap-2">
           <div className="text-3xl font-bold text-querify-blue">
             AI
@@ -101,6 +101,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
               Sign up to start asking AI automation questions and get expert answers.
             </DialogDescription>
           </DialogHeader>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-md mb-4 text-sm text-blue-700">
+          <p><strong>Important:</strong> You need to create an account to access the AI chat feature 
+          and get answers to all your questions. This helps us provide you with personalized assistance.</p>
         </div>
 
         <Form {...form}>
