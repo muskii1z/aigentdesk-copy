@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -92,20 +91,8 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <div className="flex flex-col items-center gap-2">
-          <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border"
-            aria-hidden="true"
-          >
-            <svg
-              className="stroke-querify-blue"
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 32 32"
-              aria-hidden="true"
-            >
-              <circle cx="16" cy="16" r="12" fill="none" strokeWidth="8" />
-            </svg>
+          <div className="text-3xl font-bold text-querify-blue">
+            AI
           </div>
           <DialogHeader>
             <DialogTitle className="sm:text-center">Create your account</DialogTitle>
