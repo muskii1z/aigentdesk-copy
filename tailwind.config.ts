@@ -101,15 +101,38 @@ export default {
 						opacity: '1',
 						transform: 'translateY(0)'
 					}
+				},
+				'appear': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(20px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'appear-zoom': {
+					'0%': {
+						opacity: '0',
+						transform: 'scale(0.95)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 0.5s ease-out'
+				'fade-in': 'fade-in 0.5s ease-out',
+				'appear': 'appear 0.7s ease-out forwards',
+				'appear-zoom': 'appear-zoom 1s ease-out forwards'
 			},
 			backgroundImage: {
-				'gradient-blue': 'linear-gradient(90deg, #1E3A8A 0%, #3B82F6 100%)'
+				'gradient-blue': 'linear-gradient(90deg, #1E3A8A 0%, #3B82F6 100%)',
+				'radial-gradient': 'radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 70%)'
 			}
 		}
 	},
