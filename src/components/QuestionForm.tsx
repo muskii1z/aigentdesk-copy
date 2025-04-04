@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2 } from 'lucide-react';
@@ -48,13 +47,11 @@ const QuestionForm: React.FC = () => {
           </div>
         )}
         
-        <div className="border-2 border-gray-300 dark:border-gray-600 rounded-full">
-          <PlaceholdersAndVanishInput
-            placeholders={placeholders}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-          />
-        </div>
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
         
         <div className="mt-1 text-xs text-muted-foreground text-center">
           {isRegistrationRequired ? 
