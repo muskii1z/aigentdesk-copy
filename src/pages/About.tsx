@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Instagram } from 'lucide-react';
 
 const About = () => {
   return (
@@ -10,12 +11,12 @@ const About = () => {
         <h1 className="text-4xl font-bold mb-6 text-querify-blue">About AIgentDesk</h1>
         
         <div className="bg-blue-50 p-4 rounded-lg text-center mb-8 border-l-4 border-querify-blue">
-          <p className="text-lg font-medium text-querify-blue">Powered by AIgentic Bros, built for doers</p>
+          <p className="text-lg font-medium text-querify-blue">Powered by Aigentic Bros, built for doers</p>
         </div>
         
         <div className="prose max-w-none">
           <p className="text-lg mb-6 text-querify-blue/90">
-            AIgentDesk was founded with a simple mission: to make AI automation accessible to everyone. 
+            AIgentDesk was founded by Aigentic Bros with a simple mission: to make AI automation accessible to everyone. 
             We believe that the future of business lies in intelligent automation, but we also understand 
             that navigating this complex field can be challenging.
           </p>
@@ -24,6 +25,27 @@ const About = () => {
             Our platform provides expert answers to your AI automation questions, helping you understand 
             how to implement these technologies in your business.
           </p>
+          
+          <h2 className="text-2xl font-bold mt-8 mb-4 text-querify-blue">About Aigentic Bros</h2>
+          
+          <p className="mb-6 text-querify-blue/90">
+            Aigentic Bros is a pioneering company in the AI automation space, focused on democratizing 
+            artificial intelligence and making it accessible to businesses of all sizes. Founded by a team 
+            of AI enthusiasts and industry experts, we're committed to bridging the gap between complex 
+            technology and practical business applications.
+          </p>
+          
+          <div className="flex items-center mb-8">
+            <a 
+              href="https://www.instagram.com/aigenticbros?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw%3D%3D" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              <Instagram size={20} />
+              Follow us on Instagram
+            </a>
+          </div>
           
           <h2 className="text-2xl font-bold mt-8 mb-4 text-querify-blue">Our Approach</h2>
           

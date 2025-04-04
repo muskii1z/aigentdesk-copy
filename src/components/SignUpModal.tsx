@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -169,14 +170,6 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
               className="w-full bg-querify-blue hover:bg-blue-700"
             >
               {isSubmitting ? 'Creating account...' : 'Sign up'}
-            </Button>
-            
-            <div className="flex items-center gap-3 before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-              <span className="text-xs text-muted-foreground">Or</span>
-            </div>
-            
-            <Button variant="outline" type="button" className="w-full">
-              Continue with Google
             </Button>
             
             <p className="text-center text-xs text-muted-foreground">
