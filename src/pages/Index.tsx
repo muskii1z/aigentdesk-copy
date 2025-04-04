@@ -12,6 +12,7 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleAskClick = () => {
+    // Just navigate to the ask page - modal will open there if needed
     navigate('/ask');
   };
 

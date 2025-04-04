@@ -28,8 +28,8 @@ const QuestionForm: React.FC = () => {
     
     if (!question.trim()) return;
     
+    // If registration is required, open the modal
     if (isRegistrationRequired) {
-      // This is the key part - ensure we open the modal when a user tries to submit a question
       openModal('/ask');
       return;
     }
