@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2 } from 'lucide-react';
@@ -28,7 +29,8 @@ const QuestionForm: React.FC = () => {
     if (!question.trim()) return;
     
     if (isRegistrationRequired) {
-      openModal(); // Open sign-up modal if not registered
+      // This is the key part - ensure we open the modal when a user tries to submit a question
+      openModal('/ask');
       return;
     }
     
