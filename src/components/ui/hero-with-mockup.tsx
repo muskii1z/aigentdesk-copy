@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Mockup } from "@/components/ui/mockup"
 import { Glow } from "@/components/ui/glow"
+import { Link } from "react-router-dom"
 
 interface HeroWithMockupProps {
   title: string
@@ -10,11 +11,13 @@ interface HeroWithMockupProps {
   primaryCta?: {
     text: string
     href: string
+    onClick?: () => void
   }
   secondaryCta?: {
     text: string
     href: string
     icon?: React.ReactNode
+    onClick?: () => void
   }
   mockupImage: {
     src: string
@@ -87,35 +90,67 @@ export function HeroWithMockup({
             className="relative z-10 flex flex-wrap justify-center gap-4 
             animate-appear opacity-0 [animation-delay:300ms]"
           >
-            <Button
-              asChild
-              size="lg"
-              className={cn(
-                "bg-gradient-to-b from-querify-blue to-querify-blue/90",
-                "hover:from-querify-blue/95 hover:to-querify-blue/85",
-                "text-white shadow-lg",
-                "transition-all duration-300",
-                "px-8 py-6 text-lg"
-              )}
-            >
-              <a href={primaryCta.href}>{primaryCta.text}</a>
-            </Button>
+            {primaryCta.onClick ? (
+              <Button
+                size="lg"
+                className={cn(
+                  "bg-gradient-to-b from-querify-blue to-querify-blue/90",
+                  "hover:from-querify-blue/95 hover:to-querify-blue/85",
+                  "text-white shadow-lg",
+                  "transition-all duration-300",
+                  "px-8 py-6 text-lg"
+                )}
+                onClick={primaryCta.onClick}
+              >
+                {primaryCta.text}
+              </Button>
+            ) : (
+              <Button
+                asChild
+                size="lg"
+                className={cn(
+                  "bg-gradient-to-b from-querify-blue to-querify-blue/90",
+                  "hover:from-querify-blue/95 hover:to-querify-blue/85",
+                  "text-white shadow-lg",
+                  "transition-all duration-300",
+                  "px-8 py-6 text-lg"
+                )}
+              >
+                <Link to={primaryCta.href}>{primaryCta.text}</Link>
+              </Button>
+            )}
 
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className={cn(
-                "border-querify-blue text-querify-blue hover:bg-querify-blue/5",
-                "transition-all duration-300",
-                "px-8 py-6 text-lg"
-              )}
-            >
-              <a href={secondaryCta.href}>
+            {secondaryCta.onClick ? (
+              <Button
+                size="lg"
+                variant="outline"
+                className={cn(
+                  "border-querify-blue text-querify-blue hover:bg-querify-blue/5",
+                  "transition-all duration-300",
+                  "px-8 py-6 text-lg"
+                )}
+                onClick={secondaryCta.onClick}
+              >
                 {secondaryCta.icon}
                 {secondaryCta.text}
-              </a>
-            </Button>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className={cn(
+                  "border-querify-blue text-querify-blue hover:bg-querify-blue/5",
+                  "transition-all duration-300",
+                  "px-8 py-6 text-lg"
+                )}
+              >
+                <Link to={secondaryCta.href}>
+                  {secondaryCta.icon}
+                  {secondaryCta.text}
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mockup or Custom Content */}

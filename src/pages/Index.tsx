@@ -1,11 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 import { VideoPlayer } from '@/components/ui/video-player';
+import SignUpModal from '@/components/SignUpModal';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 
 const Index = () => {
+  const { isOpen, openModal, setIsOpen } = useSignUpModal();
+
   return (
     <div className="flex flex-col min-h-screen">
       <HeroWithMockup
@@ -14,6 +17,7 @@ const Index = () => {
         primaryCta={{
           text: "Ask Your Questions",
           href: "/ask",
+          onClick: () => openModal('/ask'),
         }}
         secondaryCta={{
           text: "Learn More",
@@ -46,13 +50,16 @@ const Index = () => {
           <div className="mb-6 font-medium text-querify-blue">
             Powered by AIgentic Bros, built for doers
           </div>
-          <Link to="/ask">
-            <Button className="bg-querify-blue hover:bg-blue-700 text-white px-8 py-6">
-              Get Started Now
-            </Button>
-          </Link>
+          <Button 
+            className="bg-querify-blue hover:bg-blue-700 text-white px-8 py-6"
+            onClick={() => openModal('/ask')}
+          >
+            Get Started Now
+          </Button>
         </div>
       </section>
+      
+      <SignUpModal open={isOpen} onOpenChange={setIsOpen} />
     </div>
   );
 };
