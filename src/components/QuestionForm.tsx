@@ -53,6 +53,7 @@ const QuestionForm: React.FC = () => {
           placeholders={placeholders}
           onChange={handleChange}
           onSubmit={handleSubmit}
+          value={question}
         />
         
         <div className="mt-1 text-xs text-muted-foreground text-center">
