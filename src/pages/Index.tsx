@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
+import { VideoPlayer } from '@/components/ui/video-player';
 
 const Index = () => {
   return (
@@ -25,6 +26,15 @@ const Index = () => {
           src: "/lovable-uploads/f9322daa-f54e-4447-b957-403257ba769d.png"
         }}
         className="bg-gradient-to-br from-blue-50 to-white hero-pattern"
+        renderCustomContent={() => (
+          <div className="w-full pt-12 px-4 sm:px-6 lg:px-8">
+            <VideoPlayer 
+              src="https://download.samplelib.com/mp4/sample-5s.mp4" 
+              poster="/lovable-uploads/f9322daa-f54e-4447-b957-403257ba769d.png"
+              className="animate-appear opacity-0 [animation-delay:700ms] shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)] border border-querify-blue/10 rounded-xl"
+            />
+          </div>
+        )}
       />
 
       <section className="py-16 bg-blue-50/30">

@@ -23,6 +23,7 @@ interface HeroWithMockupProps {
     height: number
   }
   className?: string
+  renderCustomContent?: () => React.ReactNode
 }
 
 export function HeroWithMockup({
@@ -38,6 +39,7 @@ export function HeroWithMockup({
   },
   mockupImage,
   className,
+  renderCustomContent,
 }: HeroWithMockupProps) {
   return (
     <section
@@ -116,23 +118,27 @@ export function HeroWithMockup({
             </Button>
           </div>
 
-          {/* Mockup */}
-          <div className="relative w-full pt-12 px-4 sm:px-6 lg:px-8">
-            <Mockup
-              className={cn(
-                "animate-appear opacity-0 [animation-delay:700ms]",
-                "shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]",
-                "border-querify-blue/10",
-              )}
-            >
-              <img
-                {...mockupImage}
-                className="w-full h-auto"
-                loading="lazy"
-                decoding="async"
-              />
-            </Mockup>
-          </div>
+          {/* Mockup or Custom Content */}
+          {renderCustomContent ? (
+            renderCustomContent()
+          ) : (
+            <div className="relative w-full pt-12 px-4 sm:px-6 lg:px-8">
+              <Mockup
+                className={cn(
+                  "animate-appear opacity-0 [animation-delay:700ms]",
+                  "shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]",
+                  "border-querify-blue/10",
+                )}
+              >
+                <img
+                  {...mockupImage}
+                  className="w-full h-auto"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </Mockup>
+            </div>
+          )}
         </div>
       </div>
 
