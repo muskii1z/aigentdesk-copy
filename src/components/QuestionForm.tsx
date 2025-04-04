@@ -3,11 +3,13 @@ import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2 } from 'lucide-react';
 import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { addQuestion, isRegistrationRequired } = useQuerify();
+  const { openModal } = useSignUpModal();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -24,7 +26,12 @@ const QuestionForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!question.trim() || isRegistrationRequired) return;
+    if (!question.trim()) return;
+    
+    if (isRegistrationRequired) {
+      openModal(); // Open sign-up modal if not registered
+      return;
+    }
     
     setIsLoading(true);
     await addQuestion(question);
@@ -49,7 +56,7 @@ const QuestionForm: React.FC = () => {
         
         <div className="mt-1 text-xs text-muted-foreground text-center">
           {isRegistrationRequired ? 
-            "Please register to ask questions" : 
+            "Please sign up to ask questions" : 
             "Ask any question about AI automation"}
         </div>
       </div>

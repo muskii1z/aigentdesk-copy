@@ -1,12 +1,21 @@
 
 import React from 'react';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
 import QuestionForm from '@/components/QuestionForm';
 import QuestionAnswer from '@/components/QuestionAnswer';
-import RegistrationForm from '@/components/RegistrationForm';
+import SignUpModal from '@/components/SignUpModal';
 
 const AskPage = () => {
   const { isRegistrationRequired } = useQuerify();
+  const { isOpen, openModal, closeModal } = useSignUpModal();
+
+  // If registration is required, open the sign-up modal
+  React.useEffect(() => {
+    if (isRegistrationRequired) {
+      openModal();
+    }
+  }, [isRegistrationRequired, openModal]);
 
   return (
     <div className="container max-w-screen-xl py-12">
@@ -16,15 +25,20 @@ const AskPage = () => {
           Get expert answers to help you implement AI automation effectively.
         </p>
 
-        {isRegistrationRequired ? (
-          <RegistrationForm />
-        ) : (
-          <QuestionForm />
-        )}
+        <QuestionForm />
 
         <div className="mt-12">
           <QuestionAnswer />
         </div>
+
+        <SignUpModal 
+          open={isRegistrationRequired && isOpen} 
+          onOpenChange={(open) => {
+            if (!open) {
+              closeModal();
+            }
+          }} 
+        />
       </div>
     </div>
   );

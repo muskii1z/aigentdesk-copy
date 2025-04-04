@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { toast } from 'sonner';
 
@@ -38,7 +37,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  // Registration is now required by default if user is not registered
+  // Registration is now controlled by the sign-up modal
   const isRegistrationRequired = !user;
 
   const getRandomAnswer = () => {
