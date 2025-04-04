@@ -1,16 +1,27 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2 } from 'lucide-react';
+import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
 
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { addQuestion, isRegistrationRequired } = useQuerify();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const placeholders = [
+    "How can AI automation streamline my business operations?",
+    "What are the first steps to implementing AI in my workflow?",
+    "How do I measure ROI on my AI investments?",
+    "Can AI help with customer service automation?",
+    "What AI tools are best for small business marketing?",
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestion(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!question.trim() || isRegistrationRequired) return;
@@ -22,30 +33,27 @@ const QuestionForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Textarea
-          placeholder="Ask your AI automation question..."
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          className="min-h-[120px]"
-          disabled={isRegistrationRequired || isLoading}
-        />
-      </div>
-      <Button 
-        type="submit" 
-        className="w-full bg-querify-blue hover:bg-querify-lightBlue"
-        disabled={!question.trim() || isRegistrationRequired || isLoading}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing
-          </>
-        ) : (
-          'Ask Question'
+    <div className="space-y-4">
+      <div className="relative">
+        {isLoading && (
+          <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 rounded-lg">
+            <Loader2 className="h-8 w-8 animate-spin text-querify-blue" />
+          </div>
         )}
-      </Button>
-    </form>
+        
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+        
+        <div className="mt-1 text-xs text-muted-foreground text-center">
+          {isRegistrationRequired ? 
+            "Please register to ask questions" : 
+            "Ask any question about AI automation"}
+        </div>
+      </div>
+    </div>
   );
 };
 
