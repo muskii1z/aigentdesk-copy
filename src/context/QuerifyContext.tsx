@@ -18,7 +18,6 @@ interface User {
 interface QuerifyContextType {
   questions: Question[];
   user: User | null;
-  questionCount: number;
   addQuestion: (question: string) => Promise<void>;
   registerUser: (user: User) => void;
   resetQuestions: () => void;
@@ -38,9 +37,9 @@ const mockAnswers = [
 export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const [questionCount, setQuestionCount] = useState(0);
 
-  const isRegistrationRequired = questionCount >= 3 && !user;
+  // Registration is now required by default if user is not registered
+  const isRegistrationRequired = !user;
 
   const getRandomAnswer = () => {
     const randomIndex = Math.floor(Math.random() * mockAnswers.length);
@@ -49,7 +48,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const addQuestion = async (question: string) => {
     if (isRegistrationRequired) {
-      toast.error("Please register to ask more questions");
+      toast.error("Please register to ask questions");
       return;
     }
 
@@ -64,17 +63,15 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
     };
 
     setQuestions(prev => [newQuestion, ...prev]);
-    setQuestionCount(prev => prev + 1);
   };
 
   const registerUser = (userData: User) => {
     setUser(userData);
-    toast.success("Registration successful! You can now ask unlimited questions.");
+    toast.success("Registration successful! You can now ask questions.");
   };
 
   const resetQuestions = () => {
     setQuestions([]);
-    setQuestionCount(0);
   };
 
   return (
@@ -82,7 +79,6 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
       value={{
         questions,
         user,
-        questionCount,
         addQuestion,
         registerUser,
         resetQuestions,

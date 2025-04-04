@@ -56,9 +56,9 @@ const RegistrationForm: React.FC = () => {
   return (
     <Card className="animate-fade-in">
       <CardHeader>
-        <CardTitle>Register to Continue</CardTitle>
+        <CardTitle>Register to Ask Questions</CardTitle>
         <CardDescription>
-          You've reached your free questions limit. Please register to continue asking questions.
+          Please register to start asking AI automation questions.
         </CardDescription>
       </CardHeader>
       <CardContent>
