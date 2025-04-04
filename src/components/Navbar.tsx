@@ -46,7 +46,7 @@ const menuItems: IMenu[] = [
 ];
 
 const Navbar: React.FC = () => {
-  const { isOpen, openModal, setIsOpen } = useSignUpModal();
+  const { isOpen, openModal, setIsOpen, redirectUrl } = useSignUpModal();
 
   return (
     <>
@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </header>
-      <SignUpModal open={isOpen} onOpenChange={setIsOpen} />
+      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} />
     </>
   );
 };

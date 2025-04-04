@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -23,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useId } from 'react';
 
 interface SignUpModalProps {
   open: boolean;
@@ -47,6 +47,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl = '/ask' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const id = useId();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -89,38 +90,85 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create your account</DialogTitle>
-          <DialogDescription>
-            Sign up to start asking AI automation questions and get expert answers.
-          </DialogDescription>
-        </DialogHeader>
-        
+      <DialogContent>
+        <div className="flex flex-col items-center gap-2">
+          <div
+            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border"
+            aria-hidden="true"
+          >
+            <svg
+              className="stroke-querify-blue"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 32 32"
+              aria-hidden="true"
+            >
+              <circle cx="16" cy="16" r="12" fill="none" strokeWidth="8" />
+            </svg>
+          </div>
+          <DialogHeader>
+            <DialogTitle className="sm:text-center">Create your account</DialogTitle>
+            <DialogDescription className="sm:text-center">
+              Sign up to start asking AI automation questions and get expert answers.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor={`${id}-firstname`}>First name</FormLabel>
+                      <FormControl>
+                        <Input id={`${id}-firstname`} placeholder="John" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor={`${id}-lastname`}>Last name</FormLabel>
+                      <FormControl>
+                        <Input id={`${id}-lastname`} placeholder="Doe" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
               <FormField
                 control={form.control}
-                name="firstName"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First name</FormLabel>
+                    <FormLabel htmlFor={`${id}-email`}>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="John" {...field} disabled={isSubmitting} />
+                      <Input id={`${id}-email`} placeholder="john.doe@example.com" {...field} type="email" disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
-                name="lastName"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last name</FormLabel>
+                    <FormLabel htmlFor={`${id}-password`}>Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="Doe" {...field} disabled={isSubmitting} />
+                      <Input id={`${id}-password`} placeholder="••••••••" {...field} type="password" disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -128,39 +176,28 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
               />
             </div>
             
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="john.doe@example.com" {...field} type="email" disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="w-full bg-querify-blue hover:bg-blue-700"
+            >
+              {isSubmitting ? 'Creating account...' : 'Sign up'}
+            </Button>
             
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="••••••••" {...field} type="password" disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex items-center gap-3 before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
+              <span className="text-xs text-muted-foreground">Or</span>
+            </div>
             
-            <DialogFooter>
-              <Button type="submit" disabled={isSubmitting} className="w-full bg-querify-blue hover:bg-blue-700">
-                {isSubmitting ? 'Creating account...' : 'Sign up'}
-              </Button>
-            </DialogFooter>
+            <Button variant="outline" type="button" className="w-full">
+              Continue with Google
+            </Button>
+            
+            <p className="text-center text-xs text-muted-foreground">
+              By signing up you agree to our{" "}
+              <a className="underline hover:no-underline" href="#">
+                Terms
+              </a>.
+            </p>
           </form>
         </Form>
       </DialogContent>

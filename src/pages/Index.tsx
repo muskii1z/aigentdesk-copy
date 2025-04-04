@@ -7,7 +7,7 @@ import SignUpModal from '@/components/SignUpModal';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
 
 const Index = () => {
-  const { isOpen, openModal, setIsOpen } = useSignUpModal();
+  const { isOpen, openModal, setIsOpen, redirectUrl } = useSignUpModal();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -59,7 +59,7 @@ const Index = () => {
         </div>
       </section>
       
-      <SignUpModal open={isOpen} onOpenChange={setIsOpen} />
+      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} />
     </div>
   );
 };
