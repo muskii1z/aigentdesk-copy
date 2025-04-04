@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -96,16 +95,18 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
             AI
           </div>
           <DialogHeader>
-            <DialogTitle className="sm:text-center">Create your account</DialogTitle>
+            <DialogTitle className="sm:text-center">Let's Connect 💖</DialogTitle>
             <DialogDescription className="sm:text-center">
-              Sign up to start asking AI automation questions and get expert answers.
+              Is it weird to say... I feel a connection? 😍
             </DialogDescription>
           </DialogHeader>
         </div>
 
         <div className="bg-blue-50 p-4 rounded-md mb-4 text-sm text-blue-700">
-          <p><strong>Important:</strong> You need to create an account to access the AI chat feature 
-          and get answers to all your questions. This helps us provide you with personalized assistance.</p>
+          <p>But before I spill all my secrets, I need to know your name. 
+          Make an account so we can take this to the next level — 
+          You ask questions, I impress you with answers. 
+          It's a match made in AI heaven 💬❤️</p>
         </div>
 
         <Form {...form}>
