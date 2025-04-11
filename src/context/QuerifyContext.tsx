@@ -72,6 +72,8 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const resetQuestions = () => {
     setQuestions([]);
+    setUser(null);
+    toast.success("Logged out successfully");
   };
 
   return (
