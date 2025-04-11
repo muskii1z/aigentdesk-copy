@@ -55,6 +55,7 @@ export function PlaceholdersAndVanishInput({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const newDataRef = useRef<any[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [animating, setAnimating] = useState(false);
 
   const draw = useCallback(() => {
@@ -182,7 +183,7 @@ export function PlaceholdersAndVanishInput({
       animate(maxX);
     }
     
-    if (inputRef.current && inputRef.current.form) {
+    if (formRef.current) {
       onSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
@@ -191,9 +192,16 @@ export function PlaceholdersAndVanishInput({
     e.preventDefault();
     vanishAndSubmit();
   };
+
+  const handleButtonClick = () => {
+    if (internalValue.trim() && !animating) {
+      vanishAndSubmit();
+    }
+  };
   
   return (
     <form
+      ref={formRef}
       className={cn(
         "w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 border border-gray-300 dark:border-gray-600",
         internalValue && "bg-gray-50"
@@ -221,7 +229,8 @@ export function PlaceholdersAndVanishInput({
 
       <button
         disabled={!internalValue}
-        type="submit"
+        type="button"
+        onClick={handleButtonClick}
         className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-100 bg-black dark:bg-zinc-900 dark:disabled:bg-zinc-800 transition duration-200 flex items-center justify-center"
       >
         <motion.svg
