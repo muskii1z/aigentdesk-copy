@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 const AskPage = () => {
   const { isRegistrationRequired, user, resetQuestions } = useQuerify();
-  const { isOpen, closeModal } = useSignUpModal();
+  const { isOpen, closeModal, openModal } = useSignUpModal();
   
   const handleLogout = () => {
     // Clear user data in context
