@@ -5,6 +5,7 @@ import { Loader2, Send } from 'lucide-react';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
@@ -24,10 +25,40 @@ const QuestionForm: React.FC = () => {
     setQuestion(e.target.value);
   };
 
+  const sendToWebhook = async (questionText: string) => {
+    try {
+      const response = await fetch(
+        'http://localhost:5678/webhook-test/5e69d228-30c5-4013-bc4e-9fec4e40678e',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            question: questionText,
+            timestamp: new Date().toISOString()
+          }),
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error('Webhook request failed');
+      }
+      
+      console.log('Webhook response:', await response.json());
+    } catch (error) {
+      console.error('Error sending to webhook:', error);
+      toast.error('Failed to send to webhook');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!question.trim()) return;
+    
+    // Send to webhook regardless of user authentication status
+    await sendToWebhook(question);
     
     // If registration is required, open the modal when they try to submit
     if (isRegistrationRequired) {
