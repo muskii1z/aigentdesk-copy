@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
 import QuestionForm from '@/components/QuestionForm';
@@ -8,15 +8,8 @@ import SignUpModal from '@/components/SignUpModal';
 
 const AskPage = () => {
   const { isRegistrationRequired } = useQuerify();
-  const { isOpen, openModal, closeModal } = useSignUpModal();
+  const { isOpen, closeModal } = useSignUpModal();
   
-  // Open modal automatically when the user visits the page and registration is required
-  useEffect(() => {
-    if (isRegistrationRequired) {
-      openModal('/ask');
-    }
-  }, [isRegistrationRequired, openModal]);
-
   return (
     <div className="container max-w-screen-xl py-12">
       <div className="max-w-3xl mx-auto">

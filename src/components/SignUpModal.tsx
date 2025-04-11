@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useId } from 'react';
+import { useQuerify } from '@/context/QuerifyContext';
 
 interface SignUpModalProps {
   open: boolean;
@@ -47,6 +48,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const id = useId();
+  const { registerUser } = useQuerify();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -68,6 +70,13 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
       // Log the values for debugging
       console.log('Sign up form values:', values);
       
+      // Register the user with first and last name combined
+      registerUser({
+        fullName: `${values.firstName} ${values.lastName}`,
+        email: values.email,
+        phone: '' // Default empty phone since we're not collecting it
+      });
+      
       // Show success message
       toast.success('Account created successfully!');
       
@@ -77,8 +86,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
       // Close modal
       onOpenChange(false);
       
-      // Redirect to the specified URL
-      navigate(redirectUrl);
+      // No need to navigate since we want to keep the user on the chat page
     } catch (error) {
       console.error('Error submitting form:', error);
       toast.error('Something went wrong. Please try again.');

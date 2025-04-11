@@ -28,12 +28,13 @@ const QuestionForm: React.FC = () => {
     
     if (!question.trim()) return;
     
-    // If registration is required, open the modal
+    // If registration is required, open the modal when they try to submit
     if (isRegistrationRequired) {
       openModal('/ask');
       return;
     }
     
+    // Process the question if user is already registered
     setIsLoading(true);
     await addQuestion(question);
     setQuestion('');
@@ -57,9 +58,7 @@ const QuestionForm: React.FC = () => {
         />
         
         <div className="mt-1 text-xs text-muted-foreground text-center">
-          {isRegistrationRequired ? 
-            "Please sign up to ask questions" : 
-            "Ask any question about AI automation"}
+          Ask any question about AI automation
         </div>
       </div>
     </div>
