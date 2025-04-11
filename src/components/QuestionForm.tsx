@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
@@ -25,40 +25,59 @@ const QuestionForm: React.FC = () => {
     setQuestion(e.target.value);
   };
 
-  const sendToWebhook = async (questionText: string) => {
-    try {
-      const response = await fetch(
-        'http://localhost:5678/webhook-test/5e69d228-30c5-4013-bc4e-9fec4e40678e',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            question: questionText,
-            timestamp: new Date().toISOString()
-          }),
-        }
-      );
-      
-      if (!response.ok) {
-        throw new Error('Webhook request failed');
+  useEffect(() => {
+    // Initialize n8n chat when component mounts
+    const script = document.createElement('script');
+    script.src = 'https://cdn.n8n.io/chat/n8n-chat.umd.js';
+    script.async = true;
+    script.onload = () => {
+      if (window.__n8nChat) {
+        window.__n8nChat.init({
+          chatId: 'n8n-chat',
+          webhookUrl: 'http://localhost:5678/webhook/a9ea4cf7-903c-49e2-8b2a-9ad81cfa2b36/chat',
+          showWelcomeScreen: false,
+          mode: 'fullscreen',
+          container: document.getElementById('n8n-chat-container'),
+        });
       }
-      
-      console.log('Webhook response:', await response.json());
-    } catch (error) {
-      console.error('Error sending to webhook:', error);
-      toast.error('Failed to send to webhook');
-    }
-  };
+    };
+    document.body.appendChild(script);
+
+    // Add CSS to hide the default textarea
+    const style = document.createElement('style');
+    style.textContent = `
+      #n8n-chat textarea, #n8n-chat .n8n-chat-input-container {
+        display: none !important;
+      }
+      #n8n-chat-container {
+        width: 100%;
+        height: 100%;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      // Cleanup
+      document.body.removeChild(script);
+      document.head.removeChild(style);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!question.trim()) return;
     
-    // Send to webhook regardless of user authentication status
-    await sendToWebhook(question);
+    // Use n8n chat to send message
+    if (window.__n8nChat) {
+      try {
+        window.__n8nChat.sendMessage(question);
+        setQuestion('');
+      } catch (error) {
+        console.error('Failed to send message via n8n chat:', error);
+        toast.error('Failed to send message');
+      }
+    }
     
     // If registration is required, open the modal when they try to submit
     if (isRegistrationRequired) {
@@ -89,11 +108,13 @@ const QuestionForm: React.FC = () => {
             value={question}
             onChange={handleChange}
             className="flex-1 rounded-full"
+            id="my-input"
           />
           <Button 
             type="submit" 
             disabled={!question.trim()} 
             className="rounded-full"
+            id="my-send-button"
           >
             <Send className="h-4 w-4" />
           </Button>
@@ -103,6 +124,9 @@ const QuestionForm: React.FC = () => {
           Ask any question about AI automation
         </div>
       </form>
+      
+      {/* N8n Chat Container */}
+      <div id="n8n-chat-container" className="w-full h-full mt-4"></div>
     </div>
   );
 };

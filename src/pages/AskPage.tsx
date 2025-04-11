@@ -3,7 +3,6 @@ import React from 'react';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
 import QuestionForm from '@/components/QuestionForm';
-import QuestionAnswer from '@/components/QuestionAnswer';
 import SignUpModal from '@/components/SignUpModal';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
@@ -59,7 +58,7 @@ const AskPage = () => {
               </Button>
             </div>
           ) : (
-            <QuestionAnswer />
+            <div id="my-chat-container" className="w-full h-[500px] border rounded-lg"></div>
           )}
         </div>
 
