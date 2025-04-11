@@ -1,16 +1,13 @@
 
 import React from 'react';
-import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
 import QuestionForm from '@/components/QuestionForm';
-import SignUpModal from '@/components/SignUpModal';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AskPage = () => {
-  const { isRegistrationRequired, user, resetQuestions } = useQuerify();
-  const { isOpen, closeModal, openModal } = useSignUpModal();
+  const { resetQuestions } = useQuerify();
   
   const handleLogout = () => {
     // Clear user data in context
@@ -26,17 +23,15 @@ const AskPage = () => {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-center">Ask Your AI Automation Questions</h1>
           
-          {!isRegistrationRequired && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleLogout}
-              className="flex items-center gap-1"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          )}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleLogout}
+            className="flex items-center gap-1"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
         </div>
         
         <p className="text-muted-foreground mb-12 text-center">
@@ -46,31 +41,8 @@ const AskPage = () => {
         <QuestionForm />
 
         <div className="mt-12">
-          {isRegistrationRequired ? (
-            <div className="p-6 border border-blue-100 rounded-lg bg-blue-50 text-center">
-              <h3 className="text-lg font-medium text-blue-800 mb-2">Sign up to see your responses</h3>
-              <p className="text-blue-700 mb-4">Create an account to ask questions and see AI responses</p>
-              <Button 
-                onClick={() => openModal('/ask')}
-                className="bg-querify-blue hover:bg-blue-700"
-              >
-                Sign Up Now
-              </Button>
-            </div>
-          ) : (
-            <div id="my-chat-container" className="w-full h-[500px] border rounded-lg"></div>
-          )}
+          <div id="my-chat-container" className="w-full h-[500px] border rounded-lg"></div>
         </div>
-
-        <SignUpModal 
-          open={isOpen} 
-          onOpenChange={(open) => {
-            // If user is registered, allow closing the modal
-            if (!open && !isRegistrationRequired) {
-              closeModal();
-            }
-          }} 
-        />
       </div>
     </div>
   );

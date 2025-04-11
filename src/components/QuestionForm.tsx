@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
-import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -10,8 +9,7 @@ import { toast } from 'sonner';
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { addQuestion, isRegistrationRequired } = useQuerify();
-  const { openModal } = useSignUpModal();
+  const { addQuestion } = useQuerify();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -79,13 +77,7 @@ const QuestionForm: React.FC = () => {
       }
     }
     
-    // If registration is required, open the modal when they try to submit
-    if (isRegistrationRequired) {
-      openModal('/ask');
-      return;
-    }
-    
-    // Process the question if user is already registered
+    // Process the question without any auth restrictions
     setIsLoading(true);
     await addQuestion(question);
     setQuestion('');

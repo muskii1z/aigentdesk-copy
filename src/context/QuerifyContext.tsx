@@ -36,10 +36,14 @@ const mockAnswers = [
 
 export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    fullName: "Guest User",
+    email: "guest@example.com",
+    phone: ""
+  });
 
-  // Ensure this flag is properly set to true when no user is available
-  const isRegistrationRequired = !user;
+  // Always set to false to remove registration requirement
+  const isRegistrationRequired = false;
 
   const getRandomAnswer = () => {
     const randomIndex = Math.floor(Math.random() * mockAnswers.length);
@@ -47,11 +51,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const addQuestion = async (question: string) => {
-    if (isRegistrationRequired) {
-      toast.error("Please register to ask questions");
-      return;
-    }
-
+    // No registration check needed anymore
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -72,7 +72,12 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const resetQuestions = () => {
     setQuestions([]);
-    setUser(null);
+    // Reset to guest user instead of null
+    setUser({
+      fullName: "Guest User",
+      email: "guest@example.com",
+      phone: ""
+    });
     toast.success("Logged out successfully");
   };
 
