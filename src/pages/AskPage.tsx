@@ -27,7 +27,7 @@ const AskPage = () => {
         <SignUpModal 
           open={isOpen} 
           onOpenChange={(open) => {
-            // If user is not registered, prevent closing
+            // If user is registered, allow closing the modal
             if (!open && !isRegistrationRequired) {
               closeModal();
             }

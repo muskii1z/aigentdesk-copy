@@ -41,6 +41,28 @@ const QuestionForm: React.FC = () => {
     setIsLoading(false);
   };
 
+  // This function will be called when the user clicks the submit button in the input component
+  const handleInputSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
+    if (!question.trim()) return;
+    
+    // If registration is required, open the modal when they try to submit
+    if (isRegistrationRequired) {
+      openModal('/ask');
+      return;
+    }
+    
+    // Process the question if user is already registered
+    setIsLoading(true);
+    addQuestion(question).then(() => {
+      setQuestion('');
+      setIsLoading(false);
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="relative">
@@ -53,7 +75,7 @@ const QuestionForm: React.FC = () => {
         <PlaceholdersAndVanishInput
           placeholders={placeholders}
           onChange={handleChange}
-          onSubmit={handleSubmit}
+          onSubmit={handleInputSubmit}
           value={question}
         />
         

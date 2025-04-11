@@ -20,9 +20,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 import { useId } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 
 interface SignUpModalProps {
   open: boolean;
@@ -46,9 +46,9 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl = '/ask' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const id = useId();
   const { registerUser } = useQuerify();
+  const { closeModal } = useSignUpModal();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -84,7 +84,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
       form.reset();
       
       // Close modal
-      onOpenChange(false);
+      closeModal();
       
       // No need to navigate since we want to keep the user on the chat page
     } catch (error) {
@@ -96,7 +96,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {/* Prevent modal from closing */}}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent hideCloseButton>
         <div className="flex flex-col items-center gap-2">
           <div className="text-3xl font-bold text-querify-blue">
