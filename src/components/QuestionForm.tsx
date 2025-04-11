@@ -10,6 +10,7 @@ const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { addQuestion } = useQuerify();
+  const [chatInitialized, setChatInitialized] = useState(false);
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -25,19 +26,33 @@ const QuestionForm: React.FC = () => {
 
   useEffect(() => {
     // Initialize n8n chat when component mounts
+    const initChat = () => {
+      if (window.__n8nChat) {
+        try {
+          window.__n8nChat.init({
+            chatId: 'n8n-chat',
+            webhookUrl: 'http://localhost:5678/webhook/a9ea4cf7-903c-49e2-8b2a-9ad81cfa2b36/chat',
+            showWelcomeScreen: false,
+            mode: 'fullscreen',
+            container: document.getElementById('my-chat-container'),
+          });
+          console.log('N8n chat initialized successfully');
+          setChatInitialized(true);
+        } catch (error) {
+          console.error('Failed to initialize n8n chat:', error);
+          toast.error('Failed to initialize chat');
+        }
+      } else {
+        console.warn('N8n chat not available yet');
+      }
+    };
+
     const script = document.createElement('script');
     script.src = 'https://cdn.n8n.io/chat/n8n-chat.umd.js';
     script.async = true;
     script.onload = () => {
-      if (window.__n8nChat) {
-        window.__n8nChat.init({
-          chatId: 'n8n-chat',
-          webhookUrl: 'http://localhost:5678/webhook/a9ea4cf7-903c-49e2-8b2a-9ad81cfa2b36/chat',
-          showWelcomeScreen: false,
-          mode: 'fullscreen',
-          container: document.getElementById('n8n-chat-container'),
-        });
-      }
+      console.log('N8n chat script loaded');
+      initChat();
     };
     document.body.appendChild(script);
 
@@ -47,7 +62,7 @@ const QuestionForm: React.FC = () => {
       #n8n-chat textarea, #n8n-chat .n8n-chat-input-container {
         display: none !important;
       }
-      #n8n-chat-container {
+      #my-chat-container {
         width: 100%;
         height: 100%;
       }
@@ -66,21 +81,32 @@ const QuestionForm: React.FC = () => {
     
     if (!question.trim()) return;
     
+    console.log('Attempting to send message:', question);
+    
     // Use n8n chat to send message
     if (window.__n8nChat) {
       try {
+        console.log('Sending message via n8n chat');
         window.__n8nChat.sendMessage(question);
+        toast.success('Message sent');
         setQuestion('');
       } catch (error) {
         console.error('Failed to send message via n8n chat:', error);
         toast.error('Failed to send message');
       }
+    } else {
+      console.error('N8n chat not initialized');
+      toast.error('Chat not initialized yet');
     }
     
-    // Process the question without any auth restrictions
+    // Process the question in our local context
     setIsLoading(true);
-    await addQuestion(question);
-    setQuestion('');
+    try {
+      await addQuestion(question);
+      setQuestion('');
+    } catch (error) {
+      console.error('Failed to process question locally:', error);
+    }
     setIsLoading(false);
   };
 
@@ -117,8 +143,8 @@ const QuestionForm: React.FC = () => {
         </div>
       </form>
       
-      {/* N8n Chat Container */}
-      <div id="n8n-chat-container" className="w-full h-full mt-4"></div>
+      {/* Chat container will be initialized by n8n chat */}
+      <div id="my-chat-container" className="w-full h-[500px] border rounded-lg"></div>
     </div>
   );
 };
