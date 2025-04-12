@@ -38,8 +38,8 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  // Ensure this flag is properly set to true when no user is available
-  const isRegistrationRequired = !user;
+  // Set isRegistrationRequired to false so users can ask questions without registering
+  const isRegistrationRequired = false;
 
   const getRandomAnswer = () => {
     const randomIndex = Math.floor(Math.random() * mockAnswers.length);
@@ -47,11 +47,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const addQuestion = async (question: string) => {
-    if (isRegistrationRequired) {
-      toast.error("Please register to ask questions");
-      return;
-    }
-
+    // Remove registration check
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     

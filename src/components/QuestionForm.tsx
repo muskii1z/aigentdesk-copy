@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
-import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -10,8 +9,7 @@ import { toast } from 'sonner';
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { addQuestion, isRegistrationRequired } = useQuerify();
-  const { openModal } = useSignUpModal();
+  const { addQuestion } = useQuerify();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -27,28 +25,31 @@ const QuestionForm: React.FC = () => {
 
   const sendToWebhook = async (questionText: string) => {
     try {
-      const response = await fetch(
-        'http://localhost:5678/webhook-test/5e69d228-30c5-4013-bc4e-9fec4e40678e',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            question: questionText,
-            timestamp: new Date().toISOString()
-          }),
-        }
-      );
+      const webhookUrl = 'http://localhost:5678/webhook-test/6735c7d2-1412-44aa-8312-b5e5d8bc3f83';
+      console.log(`Sending question to webhook: ${webhookUrl}`);
+      
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          question: questionText,
+          timestamp: new Date().toISOString()
+        }),
+      });
       
       if (!response.ok) {
-        throw new Error('Webhook request failed');
+        throw new Error(`Webhook request failed with status: ${response.status}`);
       }
       
-      console.log('Webhook response:', await response.json());
+      const responseData = await response.json();
+      console.log('Webhook response:', responseData);
+      return true;
     } catch (error) {
       console.error('Error sending to webhook:', error);
-      toast.error('Failed to send to webhook');
+      toast.error('Failed to send question to webhook');
+      return false;
     }
   };
 
@@ -57,20 +58,24 @@ const QuestionForm: React.FC = () => {
     
     if (!question.trim()) return;
     
-    // Send to webhook regardless of user authentication status
-    await sendToWebhook(question);
-    
-    // If registration is required, open the modal when they try to submit
-    if (isRegistrationRequired) {
-      openModal('/ask');
-      return;
-    }
-    
-    // Process the question if user is already registered
     setIsLoading(true);
-    await addQuestion(question);
-    setQuestion('');
-    setIsLoading(false);
+    
+    try {
+      // Send to webhook first
+      const webhookSuccess = await sendToWebhook(question);
+      
+      if (webhookSuccess) {
+        // Only if webhook was successful, add to local state
+        await addQuestion(question);
+        toast.success('Question sent successfully!');
+        setQuestion('');
+      }
+    } catch (error) {
+      console.error('Error processing question:', error);
+      toast.error('Failed to process your question');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -92,7 +97,7 @@ const QuestionForm: React.FC = () => {
           />
           <Button 
             type="submit" 
-            disabled={!question.trim()} 
+            disabled={!question.trim() || isLoading} 
             className="rounded-full"
           >
             <Send className="h-4 w-4" />
