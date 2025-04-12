@@ -45,11 +45,18 @@ const QuestionForm: React.FC = () => {
       
       const responseData = await response.json();
       console.log('Webhook response:', responseData);
-      return true;
+      
+      // Extract only the output field from the response
+      if (responseData && responseData.output) {
+        return responseData.output;
+      } else {
+        console.warn('Response did not contain an output field:', responseData);
+        return "The webhook didn't return an expected output format.";
+      }
     } catch (error) {
       console.error('Error sending to webhook:', error);
       toast.error('Failed to send question to webhook');
-      return false;
+      return "Error: Failed to get a response from the webhook.";
     }
   };
 
@@ -61,15 +68,13 @@ const QuestionForm: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Send to webhook first
-      const webhookSuccess = await sendToWebhook(question);
+      // Send to webhook and wait for response
+      const webhookResponse = await sendToWebhook(question);
       
-      if (webhookSuccess) {
-        // Only if webhook was successful, add to local state
-        await addQuestion(question);
-        toast.success('Question sent successfully!');
-        setQuestion('');
-      }
+      // Add question and the webhook response to the context
+      await addQuestion(question, webhookResponse);
+      toast.success('Question sent successfully!');
+      setQuestion('');
     } catch (error) {
       console.error('Error processing question:', error);
       toast.error('Failed to process your question');

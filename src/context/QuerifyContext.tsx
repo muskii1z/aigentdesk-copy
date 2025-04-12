@@ -18,7 +18,7 @@ interface User {
 interface QuerifyContextType {
   questions: Question[];
   user: User | null;
-  addQuestion: (question: string) => Promise<void>;
+  addQuestion: (question: string, answer: string) => Promise<void>;
   registerUser: (user: User) => void;
   resetQuestions: () => void;
   isRegistrationRequired: boolean;
@@ -46,15 +46,12 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
     return mockAnswers[randomIndex];
   };
 
-  const addQuestion = async (question: string) => {
+  const addQuestion = async (question: string, answer: string) => {
     // Remove registration check
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     const newQuestion: Question = {
       id: Date.now().toString(),
       question,
-      answer: getRandomAnswer(),
+      answer: answer || getRandomAnswer(), // Use provided answer or fallback to random
       timestamp: new Date()
     };
 
