@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -9,9 +10,8 @@ import { toast } from 'sonner';
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { addQuestion } = useQuerify();
-  const [chatInitialized, setChatInitialized] = useState(false);
-  const [initAttempts, setInitAttempts] = useState(0);
+  const { addQuestion, isRegistrationRequired } = useQuerify();
+  const { openModal } = useSignUpModal();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -25,152 +25,51 @@ const QuestionForm: React.FC = () => {
     setQuestion(e.target.value);
   };
 
-  // Initialize n8n chat
-  useEffect(() => {
-    let scriptElement: HTMLScriptElement | null = null;
-    let styleElement: HTMLStyleElement | null = null;
-    let initInterval: number | null = null;
-    
-    const initChat = () => {
-      console.log('Attempting to initialize n8n chat...');
-      
-      if (window.__n8nChat) {
-        try {
-          window.__n8nChat.init({
-            chatId: 'n8n-chat',
-            // Update the webhook URL to use the correct ID from your error message
-            webhookUrl: 'http://localhost:5678/webhook/5e69d228-30c5-4013-bc4e-9fec4e40678e/chat',
-            showWelcomeScreen: false,
-            mode: 'fullscreen',
-            container: document.getElementById('my-chat-container'),
-          });
-          console.log('N8n chat initialized successfully');
-          setChatInitialized(true);
-          toast.success('Chat initialized successfully');
-          
-          // Clear the interval if initialization succeeds
-          if (initInterval) {
-            window.clearInterval(initInterval);
-          }
-        } catch (error) {
-          console.error('Failed to initialize n8n chat:', error);
-          setInitAttempts(prev => prev + 1);
-          if (initAttempts > 5) {
-            toast.error('Failed to initialize chat after multiple attempts');
-            if (initInterval) {
-              window.clearInterval(initInterval);
-            }
-          }
+  const sendToWebhook = async (questionText: string) => {
+    try {
+      const response = await fetch(
+        'http://localhost:5678/webhook-test/5e69d228-30c5-4013-bc4e-9fec4e40678e',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            question: questionText,
+            timestamp: new Date().toISOString()
+          }),
         }
-      } else {
-        console.warn('N8n chat not available yet, waiting...');
-        setInitAttempts(prev => prev + 1);
-      }
-    };
-
-    const loadScript = () => {
-      scriptElement = document.createElement('script');
-      scriptElement.src = 'https://cdn.n8n.io/chat/n8n-chat.umd.js';
-      scriptElement.async = true;
-      scriptElement.onload = () => {
-        console.log('N8n chat script loaded successfully');
-        // Try to initialize immediately after script loads
-        initChat();
-        
-        // Also set up an interval to retry initialization a few times
-        initInterval = window.setInterval(() => {
-          if (!chatInitialized && initAttempts < 10) {
-            initChat();
-          } else {
-            if (initInterval) {
-              window.clearInterval(initInterval);
-            }
-          }
-        }, 1000);
-      };
+      );
       
-      scriptElement.onerror = () => {
-        console.error('Failed to load n8n chat script');
-        toast.error('Failed to load chat script');
-      };
-      
-      document.body.appendChild(scriptElement);
-
-      // Add CSS to hide the default textarea
-      styleElement = document.createElement('style');
-      styleElement.textContent = `
-        #n8n-chat textarea, #n8n-chat .n8n-chat-input-container {
-          display: none !important;
-        }
-        #my-chat-container {
-          width: 100%;
-          height: 100%;
-          min-height: 500px;
-          border: 1px solid #e2e8f0;
-          border-radius: 0.5rem;
-          overflow: hidden;
-        }
-      `;
-      document.head.appendChild(styleElement);
-    };
-
-    loadScript();
-
-    return () => {
-      // Cleanup
-      if (scriptElement && document.body.contains(scriptElement)) {
-        document.body.removeChild(scriptElement);
+      if (!response.ok) {
+        throw new Error('Webhook request failed');
       }
       
-      if (styleElement && document.head.contains(styleElement)) {
-        document.head.removeChild(styleElement);
-      }
-      
-      if (initInterval) {
-        window.clearInterval(initInterval);
-      }
-    };
-  }, [chatInitialized, initAttempts]);
+      console.log('Webhook response:', await response.json());
+    } catch (error) {
+      console.error('Error sending to webhook:', error);
+      toast.error('Failed to send to webhook');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!question.trim()) return;
     
-    console.log('Attempting to send message:', question);
-    setIsLoading(true);
+    // Send to webhook regardless of user authentication status
+    await sendToWebhook(question);
     
-    // Use n8n chat to send message
-    if (window.__n8nChat && chatInitialized) {
-      try {
-        console.log('Sending message via n8n chat');
-        window.__n8nChat.sendMessage(question);
-        
-        // Process the question in our local context as well
-        try {
-          await addQuestion(question);
-        } catch (error) {
-          console.error('Failed to process question locally:', error);
-        }
-        
-        setQuestion('');
-      } catch (error) {
-        console.error('Failed to send message via n8n chat:', error);
-        toast.error('Failed to send message');
-      }
-    } else {
-      console.error('N8n chat not initialized');
-      toast.error('Chat not initialized yet');
-      
-      // Still try to process the question locally even if chat fails
-      try {
-        await addQuestion(question);
-        setQuestion('');
-      } catch (error) {
-        console.error('Failed to process question locally:', error);
-      }
+    // If registration is required, open the modal when they try to submit
+    if (isRegistrationRequired) {
+      openModal('/ask');
+      return;
     }
     
+    // Process the question if user is already registered
+    setIsLoading(true);
+    await addQuestion(question);
+    setQuestion('');
     setIsLoading(false);
   };
 
@@ -186,40 +85,24 @@ const QuestionForm: React.FC = () => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder={placeholders[Math.floor(Math.random() * placeholders.length)]}
+            placeholder={placeholders[0]}
             value={question}
             onChange={handleChange}
             className="flex-1 rounded-full"
-            id="my-input"
           />
           <Button 
             type="submit" 
-            disabled={!question.trim() || isLoading} 
+            disabled={!question.trim()} 
             className="rounded-full"
-            id="my-send-button"
           >
             <Send className="h-4 w-4" />
           </Button>
         </div>
         
         <div className="mt-1 text-xs text-muted-foreground text-center">
-          {chatInitialized ? 
-            "Ask any question about AI automation" : 
-            "Initializing chat system..."}
+          Ask any question about AI automation
         </div>
       </form>
-      
-      {/* Chat container will be initialized by n8n chat */}
-      <div id="my-chat-container" className="w-full h-[500px] border rounded-lg p-4">
-        {!chatInitialized && 
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-querify-blue" />
-              <p className="text-muted-foreground">Initializing chat system...</p>
-            </div>
-          </div>
-        }
-      </div>
     </div>
   );
 };

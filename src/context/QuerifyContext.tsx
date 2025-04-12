@@ -26,32 +26,32 @@ interface QuerifyContextType {
 
 const QuerifyContext = createContext<QuerifyContextType | undefined>(undefined);
 
+const mockAnswers = [
+  "AI automation can help streamline your business processes by handling repetitive tasks, analyzing large datasets, and providing insights that would be time-consuming for humans to generate.",
+  "When implementing AI automation, start with a clear goal, choose the right tools, ensure quality data, and continuously monitor and refine the system.",
+  "Common challenges in AI automation include data quality issues, integration with existing systems, change management, and ensuring ethical AI use and compliance with regulations.",
+  "To measure ROI on AI automation investments, track metrics like time saved, error reduction, increased productivity, customer satisfaction improvements, and direct cost savings.",
+  "AI tools like ChatGPT can be integrated into your workflow through APIs, plugins for existing software, or dedicated solutions built for your specific needs."
+];
+
 export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [user, setUser] = useState<User | null>({
-    fullName: "Guest User",
-    email: "guest@example.com",
-    phone: ""
-  });
+  const [user, setUser] = useState<User | null>(null);
 
-  // Always set to false to remove registration requirement
-  const isRegistrationRequired = false;
+  // Ensure this flag is properly set to true when no user is available
+  const isRegistrationRequired = !user;
 
   const getRandomAnswer = () => {
-    const mockAnswers = [
-      "AI automation can help streamline your business processes by handling repetitive tasks, analyzing large datasets, and providing insights that would be time-consuming for humans to generate.",
-      "When implementing AI automation, start with a clear goal, choose the right tools, ensure quality data, and continuously monitor and refine the system.",
-      "Common challenges in AI automation include data quality issues, integration with existing systems, change management, and ensuring ethical AI use and compliance with regulations.",
-      "To measure ROI on AI automation investments, track metrics like time saved, error reduction, increased productivity, customer satisfaction improvements, and direct cost savings.",
-      "AI tools like ChatGPT can be integrated into your workflow through APIs, plugins for existing software, or dedicated solutions built for your specific needs."
-    ];
-    
     const randomIndex = Math.floor(Math.random() * mockAnswers.length);
     return mockAnswers[randomIndex];
   };
 
   const addQuestion = async (question: string) => {
-    // No registration check needed anymore
+    if (isRegistrationRequired) {
+      toast.error("Please register to ask questions");
+      return;
+    }
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -72,12 +72,8 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const resetQuestions = () => {
     setQuestions([]);
-    // Reset to guest user instead of null
-    setUser({
-      fullName: "Guest User",
-      email: "guest@example.com",
-      phone: ""
-    });
+    setUser(null);
+    toast.success("Logged out successfully");
   };
 
   return (
