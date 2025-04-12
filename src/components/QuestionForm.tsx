@@ -38,7 +38,8 @@ const QuestionForm: React.FC = () => {
         try {
           window.__n8nChat.init({
             chatId: 'n8n-chat',
-            webhookUrl: 'http://localhost:5678/webhook/a9ea4cf7-903c-49e2-8b2a-9ad81cfa2b36/chat',
+            // Update the webhook URL to use the correct ID from your error message
+            webhookUrl: 'http://localhost:5678/webhook/5e69d228-30c5-4013-bc4e-9fec4e40678e/chat',
             showWelcomeScreen: false,
             mode: 'fullscreen',
             container: document.getElementById('my-chat-container'),
