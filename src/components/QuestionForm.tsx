@@ -25,7 +25,7 @@ const QuestionForm: React.FC = () => {
 
   const sendToWebhook = async (questionText: string) => {
     try {
-      const webhookUrl = 'http://localhost:5678/webhook-test/6735c7d2-1412-44aa-8312-b5e5d8bc3f83';
+      const webhookUrl = 'http://localhost:5678/webhook/6735c7d2-1412-44aa-8312-b5e5d8bc3f83';
       console.log(`Sending question to webhook: ${webhookUrl}`);
       
       const response = await fetch(webhookUrl, {
