@@ -67,8 +67,9 @@ const Navbar: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white"
+              className="bg-querify-blue hover:bg-blue-700 text-white text-base px-6 py-6 text-lg font-medium"
               onClick={handleAskClick}
+              size="lg"
             >
               Ask Questions
             </Button>

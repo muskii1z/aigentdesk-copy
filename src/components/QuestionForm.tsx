@@ -5,11 +5,13 @@ import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { addQuestion } = useQuerify();
+  const { addQuestion, user } = useQuerify();
+  const { openModal } = useSignUpModal();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -64,6 +66,13 @@ const QuestionForm: React.FC = () => {
     e.preventDefault();
     
     if (!question.trim()) return;
+    
+    // Check if user is logged in
+    if (!user) {
+      // If not logged in, open the sign-up modal
+      openModal('/ask');
+      return;
+    }
     
     setIsLoading(true);
     

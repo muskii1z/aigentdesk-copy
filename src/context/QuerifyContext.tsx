@@ -38,8 +38,8 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  // Set isRegistrationRequired to false so users can ask questions without registering
-  const isRegistrationRequired = false;
+  // Change isRegistrationRequired to true to restore signup requirement
+  const isRegistrationRequired = true;
 
   const getRandomAnswer = () => {
     const randomIndex = Math.floor(Math.random() * mockAnswers.length);
@@ -47,7 +47,12 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const addQuestion = async (question: string, answer: string) => {
-    // Remove registration check
+    // Reinstate registration check
+    if (isRegistrationRequired && !user) {
+      toast.error("Please sign up to see answers to your questions");
+      return;
+    }
+
     const newQuestion: Question = {
       id: Date.now().toString(),
       question,

@@ -11,8 +11,8 @@ const Footer: React.FC = () => {
             <Link to="/" className="inline-block">
               <span className="font-bold text-xl text-querify-blue">AIgentDesk</span>
             </Link>
-            <div className="bg-querify-blue/10 p-2 rounded text-querify-blue font-medium inline-block">
-              Powered by AIgentic Bros, built for doers
+            <div className="py-2 px-3 rounded-md text-querify-blue font-medium inline-block bg-querify-blue/5 border border-querify-blue/10">
+              Powered by AIgentic Bros
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
               AIgentDesk helps you answer your AI automation questions with accurate, helpful responses.

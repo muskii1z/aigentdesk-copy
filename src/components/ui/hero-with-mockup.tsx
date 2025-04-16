@@ -81,8 +81,8 @@ export function HeroWithMockup({
             {description}
           </p>
 
-          <div className="text-lg md:text-xl font-medium bg-querify-blue/10 text-querify-blue py-3 px-6 rounded-full mb-2 inline-block animate-appear opacity-0 [animation-delay:250ms]">
-            Powered by AIgentic Bros, built for doers
+          <div className="text-lg md:text-xl font-medium bg-querify-blue/5 text-querify-blue py-2 px-4 rounded-md border border-querify-blue/10 inline-block animate-appear opacity-0 [animation-delay:250ms]">
+            Powered by AIgentic Bros
           </div>
 
           {/* CTAs */}
@@ -98,7 +98,7 @@ export function HeroWithMockup({
                   "hover:from-querify-blue/95 hover:to-querify-blue/85",
                   "text-white shadow-lg",
                   "transition-all duration-300",
-                  "px-8 py-6 text-lg"
+                  "px-10 py-7 text-lg font-medium"
                 )}
                 onClick={primaryCta.onClick}
               >
@@ -113,7 +113,7 @@ export function HeroWithMockup({
                   "hover:from-querify-blue/95 hover:to-querify-blue/85",
                   "text-white shadow-lg",
                   "transition-all duration-300",
-                  "px-8 py-6 text-lg"
+                  "px-10 py-7 text-lg font-medium"
                 )}
               >
                 <Link to={primaryCta.href}>{primaryCta.text}</Link>
@@ -127,7 +127,7 @@ export function HeroWithMockup({
                 className={cn(
                   "border-querify-blue text-querify-blue hover:bg-querify-blue/5",
                   "transition-all duration-300",
-                  "px-8 py-6 text-lg"
+                  "px-8 py-7 text-lg font-medium"
                 )}
                 onClick={secondaryCta.onClick}
               >
@@ -142,7 +142,7 @@ export function HeroWithMockup({
                 className={cn(
                   "border-querify-blue text-querify-blue hover:bg-querify-blue/5",
                   "transition-all duration-300",
-                  "px-8 py-6 text-lg"
+                  "px-8 py-7 text-lg font-medium"
                 )}
               >
                 <Link to={secondaryCta.href}>
