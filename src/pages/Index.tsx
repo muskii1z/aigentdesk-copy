@@ -54,11 +54,11 @@ const Index = () => {
           <p className="text-lg text-querify-blue/80 mb-8 max-w-2xl mx-auto">
             Start asking your AI automation questions today and transform your business.
           </p>
-          <div className="mb-6 font-medium text-querify-blue inline-block py-2 px-4 rounded-md bg-querify-blue/5 border border-querify-blue/10">
+          <div className="mb-6 font-medium text-querify-blue text-sm inline-block py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
             Powered by AIgentic Bros
           </div>
           <Button 
-            className="bg-querify-blue hover:bg-blue-700 text-white px-10 py-7 text-lg font-medium"
+            className="bg-querify-blue hover:bg-blue-700 text-white px-12 py-8 text-xl font-medium"
             onClick={handleAskClick}
             size="lg"
           >

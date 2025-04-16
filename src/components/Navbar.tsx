@@ -57,9 +57,15 @@ const Navbar: React.FC = () => {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/30">
         <div className="container flex h-16 max-w-screen-xl items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="font-bold text-2xl text-querify-blue">AIgentDesk</div>
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/" className="flex items-center">
+              <div className="font-bold text-2xl text-querify-blue">AIgentDesk</div>
+            </Link>
+            
+            <div className="font-medium text-querify-blue text-sm inline-block py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
+              Powered by AIgentic Bros
+            </div>
+          </div>
 
           <div className="flex-1 flex justify-center">
             <Menu list={menuItems} />
@@ -67,7 +73,7 @@ const Navbar: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white text-base px-6 py-6 text-lg font-medium"
+              className="bg-querify-blue hover:bg-blue-700 text-white text-base px-8 py-7 text-lg font-medium"
               onClick={handleAskClick}
               size="lg"
             >
