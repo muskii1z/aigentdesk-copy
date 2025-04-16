@@ -6,9 +6,12 @@ import QuestionAnswer from '@/components/QuestionAnswer';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+import SignUpModal from '@/components/SignUpModal';
+import { useSignUpModal } from '@/hooks/useSignUpModal';
 
 const AskPage = () => {
   const { user, resetQuestions } = useQuerify();
+  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
   
   const handleLogout = () => {
     // Clear user data in context
@@ -46,6 +49,13 @@ const AskPage = () => {
         <div className="mt-12">
           <QuestionAnswer />
         </div>
+        
+        {/* Add the SignUpModal component to the page */}
+        <SignUpModal 
+          open={isOpen} 
+          onOpenChange={setIsOpen} 
+          redirectUrl={redirectUrl} 
+        />
       </div>
     </div>
   );
