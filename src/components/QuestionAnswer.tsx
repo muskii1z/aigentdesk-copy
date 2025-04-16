@@ -49,8 +49,10 @@ const QuestionAnswer: React.FC = () => {
           </CardHeader>
           <CardContent className="py-4">
             {isRegistrationRequired && !user ? (
-              <div className="flex flex-col items-center p-4 bg-blue-50 rounded-md">
-                <p className="text-blue-700 mb-3 text-center">Sign up to see the response to your question</p>
+              <div className="flex flex-col items-center p-6 bg-blue-50 rounded-md">
+                <p className="text-blue-700 mb-4 text-center font-medium">
+                  Sign up to see your question solved
+                </p>
                 <Button 
                   onClick={handleSignUpClick} 
                   className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2"
