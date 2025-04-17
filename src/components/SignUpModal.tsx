@@ -17,9 +17,10 @@ import { toast } from 'sonner';
 interface SignUpModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  redirectUrl?: string;
 }
 
-const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange }) => {
+const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl }) => {
   const id = useId();
   const { registerUser } = useQuerify();
   const [isSubmitting, setIsSubmitting] = useState(false);
