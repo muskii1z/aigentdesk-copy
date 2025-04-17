@@ -39,6 +39,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
         email,
         phone: ''
       });
+      toast.success("Account created successfully!");
       onOpenChange(false);
     } catch (error) {
       toast.error('Something went wrong. Please try again.');

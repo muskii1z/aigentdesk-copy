@@ -38,7 +38,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  // Change isRegistrationRequired to true to restore signup requirement
+  // Ensure registration is required
   const isRegistrationRequired = true;
 
   const getRandomAnswer = () => {
@@ -47,12 +47,6 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   const addQuestion = async (question: string, answer: string) => {
-    // Reinstate registration check
-    if (isRegistrationRequired && !user) {
-      toast.error("Please sign up to see answers to your questions");
-      return;
-    }
-
     const newQuestion: Question = {
       id: Date.now().toString(),
       question,
@@ -65,7 +59,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const registerUser = (userData: User) => {
     setUser(userData);
-    toast.success("Registration successful! You can now ask questions.");
+    toast.success("Registration successful! You can now see all answers to your questions.");
   };
 
   const resetQuestions = () => {
