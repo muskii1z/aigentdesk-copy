@@ -3,16 +3,13 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 import { VideoPlayer } from '@/components/ui/video-player';
-import SignUpModal from '@/components/SignUpModal';
-import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
-  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
   const navigate = useNavigate();
 
   const handleAskClick = () => {
-    // Just navigate to the ask page - modal will open there if needed
+    // Just navigate to the ask page
     navigate('/ask');
   };
 
@@ -54,11 +51,8 @@ const Index = () => {
           <p className="text-lg text-querify-blue/80 mb-8 max-w-2xl mx-auto">
             Start asking your AI automation questions today and transform your business.
           </p>
-          <div className="mb-6 font-medium text-querify-blue text-sm inline-block py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
-            Powered by AIgentic Bros
-          </div>
           <Button 
-            className="bg-querify-blue hover:bg-blue-700 text-white px-12 py-8 text-xl font-medium"
+            className="bg-querify-blue hover:bg-blue-700 text-white px-16 py-8 text-xl font-medium w-72"
             onClick={handleAskClick}
             size="lg"
           >
@@ -66,8 +60,6 @@ const Index = () => {
           </Button>
         </div>
       </section>
-      
-      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} />
     </div>
   );
 };

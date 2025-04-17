@@ -3,17 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuerify } from '@/context/QuerifyContext';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, Bot, UserPlus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useSignUpModal } from '@/hooks/useSignUpModal';
+import { MessageCircle, Bot } from 'lucide-react';
 
 const QuestionAnswer: React.FC = () => {
-  const { questions, user, isRegistrationRequired } = useQuerify();
-  const { openModal } = useSignUpModal();
-
-  const handleSignUpClick = () => {
-    openModal();
-  };
+  const { questions } = useQuerify();
 
   if (questions.length === 0) {
     return (
@@ -48,27 +41,12 @@ const QuestionAnswer: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="py-4">
-            {isRegistrationRequired && !user ? (
-              <div className="flex flex-col items-center p-6 bg-blue-50 rounded-md">
-                <p className="text-blue-700 mb-4 text-center font-medium">
-                  Sign up to see your question solved
-                </p>
-                <Button 
-                  onClick={handleSignUpClick} 
-                  className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Sign up now
-                </Button>
+            <div className="flex items-start gap-3">
+              <div className="mt-1 bg-purple-100 p-2 rounded-full">
+                <Bot className="h-4 w-4 text-purple-700" />
               </div>
-            ) : (
-              <div className="flex items-start gap-3">
-                <div className="mt-1 bg-purple-100 p-2 rounded-full">
-                  <Bot className="h-4 w-4 text-purple-700" />
-                </div>
-                <p>{item.answer}</p>
-              </div>
-            )}
+              <p>{item.answer}</p>
+            </div>
           </CardContent>
         </Card>
       ))}
