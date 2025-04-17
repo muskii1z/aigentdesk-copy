@@ -1,12 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuerify } from '@/context/QuerifyContext';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, Bot } from 'lucide-react';
+import { MessageCircle, Bot, UserPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import SignUpModal from './SignUpModal';
 
 const QuestionAnswer: React.FC = () => {
-  const { questions } = useQuerify();
+  const { questions, user, isRegistrationRequired } = useQuerify();
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
   if (questions.length === 0) {
     return (
@@ -41,15 +44,35 @@ const QuestionAnswer: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="py-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-1 bg-purple-100 p-2 rounded-full">
-                <Bot className="h-4 w-4 text-purple-700" />
+            {isRegistrationRequired && !user ? (
+              <div className="flex flex-col items-center p-6 bg-blue-50 rounded-md">
+                <p className="text-blue-700 mb-4 text-center font-medium">
+                  Sign up to see your question solved
+                </p>
+                <Button 
+                  onClick={() => setShowSignUpModal(true)} 
+                  className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Sign up now
+                </Button>
               </div>
-              <p>{item.answer}</p>
-            </div>
+            ) : (
+              <div className="flex items-start gap-3">
+                <div className="mt-1 bg-purple-100 p-2 rounded-full">
+                  <Bot className="h-4 w-4 text-purple-700" />
+                </div>
+                <p>{item.answer}</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}
+
+      <SignUpModal 
+        open={showSignUpModal} 
+        onOpenChange={setShowSignUpModal} 
+      />
     </div>
   );
 };
