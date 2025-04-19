@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
@@ -85,13 +84,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
             AI
           </div>
           <DialogHeader>
-            <DialogTitle className="sm:text-center">
-              {isSignIn ? 'Sign In' : 'Sign Up'}
-            </DialogTitle>
+            <DialogTitle className="sm:text-center">{isSignIn ? 'Welcome Back! 👋' : "Let's Connect 💖"}</DialogTitle>
             <DialogDescription className="sm:text-center whitespace-pre-line">
               {isSignIn 
-                ? "Welcome back! Let's continue our AI journey together."
-                : "Connect with us and unlock AI automation insights.\nCreate an account to get started!"
+                ? "Great to see you again! Let's continue our AI journey together."
+                : "Is it weird to say... I feel a connection? 😍\nBut before I spill all my secrets, I need to know your name.\nMake an account so we can take this to the next level —\nYou ask questions, I impress you with answers. It's a match made in AI heaven 💬❤️"
               }
             </DialogDescription>
           </DialogHeader>
