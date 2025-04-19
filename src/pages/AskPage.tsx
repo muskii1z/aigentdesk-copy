@@ -18,7 +18,7 @@ const AskPage = () => {
   };
 
   return (
-    <AuroraBackground>
+    <AuroraBackground className="min-h-screen h-auto py-0">
       <div className="container max-w-screen-xl py-12 relative z-10">
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-4">

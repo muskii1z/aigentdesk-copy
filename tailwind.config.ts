@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -136,7 +137,7 @@ export default {
         'fade-in': 'fade-in 0.5s ease-out',
         'appear': 'appear 0.7s ease-out forwards',
         'appear-zoom': 'appear-zoom 1s ease-out forwards',
-        aurora: "aurora 60s linear infinite"
+        aurora: "aurora 40s linear infinite"
       },
       backgroundImage: {
         'gradient-blue': 'linear-gradient(90deg, #1E3A8A 0%, #3B82F6 100%)',
