@@ -6,6 +6,7 @@ import QuestionAnswer from '@/components/QuestionAnswer';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 
 const AskPage = () => {
   const { user, resetQuestions } = useQuerify();
@@ -17,10 +18,10 @@ const AskPage = () => {
   };
 
   return (
-    <div className="container max-w-screen-xl py-16">
-      <div className="max-w-4xl mx-auto">
-        {user && (
-          <div className="flex justify-end mb-8">
+    <div className="min-h-screen bg-background">
+      {user && (
+        <div className="container max-w-screen-xl py-4">
+          <div className="flex justify-end">
             <Button 
               variant="outline" 
               size="sm" 
@@ -31,18 +32,25 @@ const AskPage = () => {
               Logout
             </Button>
           </div>
-        )}
-
-        <div className="text-center mb-16 space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Ask Your AI Automation Questions
-          </h1>
-          
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            Get expert answers to help you implement AI automation effectively.
-          </p>
         </div>
+      )}
 
+      <HeroWithMockup
+        title="Ask Your AI Automation Questions"
+        description="Get expert answers to help you implement AI automation effectively"
+        primaryCta={{
+          text: "Ask a Question",
+          href: "#ask-form"
+        }}
+        mockupImage={{
+          src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=2000&q=80",
+          alt: "AI Automation Interface",
+          width: 2000,
+          height: 1333
+        }}
+      />
+
+      <div className="container max-w-4xl mx-auto pb-16" id="ask-form">
         <div className="space-y-16">
           <QuestionForm />
           <QuestionAnswer />
