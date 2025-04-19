@@ -9,7 +9,6 @@ import RootLayout from "./components/RootLayout";
 import Index from "./pages/Index";
 import AskPage from "./pages/AskPage";
 import About from "./pages/About";
-import BlogPage from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,7 +25,6 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/ask" element={<AskPage />} />
               <Route path="/about" element={<About />} />
-              <Route path="/blog" element={<BlogPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -19,30 +19,6 @@ const menuItems: IMenu[] = [
     url: '/about',
     dropdown: false,
   },
-  {
-    id: 3,
-    title: 'Products',
-    url: '/products',
-    dropdown: true,
-    items: [
-      {
-        id: 31,
-        title: 'AI Solutions',
-        url: '/products/ai-solutions',
-      },
-      {
-        id: 32,
-        title: 'Automation Tools',
-        url: '/products/automation',
-      },
-    ],
-  },
-  {
-    id: 4,
-    title: 'Blog',
-    url: '/blog',
-    dropdown: false,
-  },
 ];
 
 const Navbar: React.FC = () => {
@@ -56,26 +32,32 @@ const Navbar: React.FC = () => {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/30">
-        <div className="container flex h-16 max-w-screen-xl items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="container flex h-16 max-w-screen-xl items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-4 md:gap-6">
             <Link to="/" className="flex items-center">
-              <div className="font-bold text-2xl text-querify-blue">AIgentDesk</div>
+              <div className="font-bold text-xl md:text-2xl text-querify-blue">AIgentDesk</div>
             </Link>
             
-            <div className="font-medium text-querify-blue text-sm inline-block py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
+            <div className="hidden md:inline-block font-medium text-querify-blue text-sm py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
               Powered by AIgentic Bros
             </div>
           </div>
 
-          <div className="flex-1 flex justify-center">
+          <div className="hidden md:flex flex-1 justify-center">
             <Menu list={menuItems} />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white text-base px-8 py-7 text-lg font-medium"
+              variant="outline"
+              className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
+              onClick={() => setIsOpen(true)}
+            >
+              Sign In
+            </Button>
+            <Button 
+              className="bg-querify-blue hover:bg-blue-700 text-white hidden md:inline-flex"
               onClick={handleAskClick}
-              size="lg"
             >
               Ask Questions
             </Button>
