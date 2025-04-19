@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQuerify } from '@/context/QuerifyContext';
 import { toast } from 'sonner';
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from 'react-router-dom';
 
 interface SignUpModalProps {
   open: boolean;
@@ -24,25 +26,48 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   const id = useId();
   const { registerUser } = useQuerify();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
-    const fullName = formData.get('name') as string;
     const email = formData.get('email') as string;
+    const fullName = formData.get('name') as string;
+    const password = formData.get('password') as string;
 
     try {
-      registerUser({
-        fullName,
+      // Sign up the user with Supabase
+      const { data, error } = await supabase.auth.signUp({
         email,
-        phone: ''
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
       });
-      toast.success("Account created successfully!");
-      onOpenChange(false);
-    } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Register user in context after successful signup
+        registerUser({
+          fullName,
+          email,
+          phone: ''
+        });
+        
+        toast.success("Account created successfully! You can now ask questions.");
+        onOpenChange(false);
+        
+        if (redirectUrl) {
+          navigate(redirectUrl);
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to create account. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -87,6 +112,18 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
                 placeholder="john@example.com" 
                 type="email" 
                 required 
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`${id}-password`}>Password</Label>
+              <Input 
+                id={`${id}-password`} 
+                name="password"
+                placeholder="••••••••" 
+                type="password" 
+                required 
+                minLength={6}
                 disabled={isSubmitting}
               />
             </div>
