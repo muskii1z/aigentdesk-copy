@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import QuestionForm from '@/components/QuestionForm';
@@ -6,6 +5,7 @@ import QuestionAnswer from '@/components/QuestionAnswer';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+import { Glow } from '@/components/ui/glow';
 
 const AskPage = () => {
   const { user, resetQuestions } = useQuerify();
@@ -17,7 +17,7 @@ const AskPage = () => {
   };
 
   return (
-    <div className="container max-w-screen-xl py-16">
+    <div className="container max-w-screen-xl py-16 relative">
       <div className="max-w-4xl mx-auto">
         {user && (
           <div className="flex justify-end mb-8">
@@ -47,6 +47,13 @@ const AskPage = () => {
           <QuestionForm />
           <QuestionAnswer />
         </div>
+      </div>
+
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-[-1]">
+        <Glow
+          variant="above"
+          className="animate-appear-zoom opacity-0 [animation-delay:1000ms]"
+        />
       </div>
     </div>
   );
