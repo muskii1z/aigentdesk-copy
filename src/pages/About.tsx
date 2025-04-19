@@ -37,7 +37,7 @@ const About = () => {
             provide real value. Let's build smarter, together.
           </p>
           
-          <div className="flex items-center mb-8">
+          <div className="flex items-center mb-8 space-x-4">
             <a 
               href="https://www.instagram.com/aigenticbros?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw%3D%3D" 
               target="_blank" 
@@ -46,6 +46,18 @@ const About = () => {
             >
               <Instagram size={20} />
               Follow us on Instagram
+            </a>
+            
+            <a 
+              href="https://www.skool.com/aigentic-growth-lab-6351" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm129.5 261.4c0 24.2-19.6 43.8-43.8 43.8h-171.3c-24.2 0-43.8-19.6-43.8-43.8v-10.6c0-24.2 19.6-43.8 43.8-43.8h171.3c24.2 0 43.8 19.6 43.8 43.8v10.6z"/>
+              </svg>
+              Join our SKOOL Community
             </a>
           </div>
           
