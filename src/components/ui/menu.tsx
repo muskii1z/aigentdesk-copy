@@ -21,15 +21,15 @@ const Menu = ({ list }: MenuProps) => {
 
   return (
     <MotionConfig transition={{ bounce: 0, type: 'tween' }}>
-      <nav className={'relative'}>
-        <ul className={'flex items-center'}>
+      <nav className="relative w-full">
+        <ul className="flex items-center justify-center w-full gap-2">
           {list?.map((item) => {
             return (
-              <li key={item.id} className={'relative'}>
+              <li key={item.id} className="relative flex-1">
                 <Link
                   className={`
-                    relative flex items-center justify-center rounded px-8 py-3 transition-all
-                    hover:bg-foreground/10
+                    relative flex items-center justify-center rounded px-8 py-4 transition-all text-base font-medium
+                    hover:bg-foreground/10 w-full
                     ${hovered === item?.id ? 'bg-foreground/10' : ''}
                   `}
                   onMouseEnter={() => setHovered(item.id)}
@@ -41,8 +41,8 @@ const Menu = ({ list }: MenuProps) => {
                 {hovered === item?.id && !item?.dropdown && (
                   <motion.div
                     layout
-                    layoutId={`cursor`}
-                    className={'absolute h-0.5 w-full bg-foreground'}
+                    layoutId="cursor"
+                    className="absolute h-0.5 w-full bg-foreground"
                   />
                 )}
                 {item?.dropdown && hovered === item?.id && (
