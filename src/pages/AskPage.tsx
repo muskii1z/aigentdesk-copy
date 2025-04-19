@@ -17,33 +17,34 @@ const AskPage = () => {
   };
 
   return (
-    <div className="container max-w-screen-xl py-12">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-            Ask Your AI Automation Questions
-          </h1>
-          
-          {user && (
+    <div className="container max-w-screen-xl py-16">
+      <div className="max-w-4xl mx-auto">
+        {user && (
+          <div className="flex justify-end mb-8">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleLogout}
-              className="flex items-center gap-1"
+              className="flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />
               Logout
             </Button>
-          )}
+          </div>
+        )}
+
+        <div className="text-center mb-16 space-y-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Ask Your AI Automation Questions
+          </h1>
+          
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            Get expert answers to help you implement AI automation effectively.
+          </p>
         </div>
-        
-        <p className="text-slate-600 dark:text-slate-300 mb-12 text-center">
-          Get expert answers to help you implement AI automation effectively.
-        </p>
 
-        <QuestionForm />
-
-        <div className="mt-12">
+        <div className="space-y-16">
+          <QuestionForm />
           <QuestionAnswer />
         </div>
       </div>
