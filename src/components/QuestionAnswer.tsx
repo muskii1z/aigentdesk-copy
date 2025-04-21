@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuerify } from '@/context/QuerifyContext';
@@ -90,7 +91,9 @@ const QuestionAnswer: React.FC = () => {
                   <Bot className="h-4 w-4 text-purple-700" />
                 </div>
                 <div className="prose prose-sm dark:prose-invert max-w-none overflow-hidden break-words w-full">
-                  <ReactMarkdown className="overflow-auto">{item.answer}</ReactMarkdown>
+                  <div className="overflow-auto">
+                    <ReactMarkdown>{item.answer}</ReactMarkdown>
+                  </div>
                 </div>
               </div>
             )}
