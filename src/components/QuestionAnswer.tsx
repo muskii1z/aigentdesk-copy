@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { MessageCircle, Bot, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SignUpModal from './SignUpModal';
+import ReactMarkdown from 'react-markdown';
 
 const QuestionAnswer: React.FC = () => {
   const { questions, user, isRegistrationRequired } = useQuerify();
@@ -89,7 +90,9 @@ const QuestionAnswer: React.FC = () => {
                 <div className="mt-1 bg-purple-100 p-2 rounded-full">
                   <Bot className="h-4 w-4 text-purple-700" />
                 </div>
-                <p>{item.answer}</p>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown>{item.answer}</ReactMarkdown>
+                </div>
               </div>
             )}
           </CardContent>
