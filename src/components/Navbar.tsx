@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </header>
-      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} />
+      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} defaultView="sign-in" />
     </>
   );
 };

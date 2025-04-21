@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,13 +21,14 @@ interface SignUpModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   redirectUrl?: string;
+  defaultView?: 'sign-up' | 'sign-in';
 }
 
-const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl }) => {
+const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl, defaultView = 'sign-up' }) => {
   const id = useId();
   const { registerUser } = useQuerify();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSignIn, setIsSignIn] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(defaultView === 'sign-in');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
