@@ -39,7 +39,7 @@ const Index = () => {
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/UX-R-PkjE84"
+                src="https://www.youtube.com/embed/UX-R-PkjE84?rel=0"
                 title="AIgentDesk Introduction"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
