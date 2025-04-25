@@ -41,13 +41,15 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
+    // STRICT CLIENT PAYWALL ENFORCEMENT
     if (!isPaid) {
       toast.error("You must pay for access before signing up.");
       setIsSubmitting(false);
       return;
     }
+
+    setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
