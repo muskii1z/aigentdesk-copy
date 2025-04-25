@@ -29,16 +29,18 @@ const QuestionAnswer: React.FC = () => {
                   To view answers, first pay and create your account.
                 </p>
               </div>
-              <a
-                href={STRIPE_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full"
-              >
-                <Button className="bg-querify-blue hover:bg-blue-700 w-full md:w-auto mb-2">
-                  Pay with Stripe
-                </Button>
-              </a>
+              <div className="flex justify-center w-full mb-0">
+                <a
+                  href={STRIPE_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex justify-center"
+                >
+                  <Button className="bg-querify-blue hover:bg-blue-700 w-auto px-6 py-2 mb-2">
+                    Pay with Stripe
+                  </Button>
+                </a>
+              </div>
               <Button 
                 onClick={() => setShowSignUpModal(true)} 
                 className="bg-green-600 hover:bg-green-700 w-full md:w-auto flex items-center gap-2"
@@ -93,16 +95,18 @@ const QuestionAnswer: React.FC = () => {
                     To see your answer, please pay and register.
                   </p>
                 </div>
-                <a
-                  href={STRIPE_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full"
-                >
-                  <Button className="bg-querify-blue hover:bg-blue-700 w-full md:w-auto mb-2">
-                    Pay with Stripe
-                  </Button>
-                </a>
+                <div className="flex justify-center w-full mb-0">
+                  <a
+                    href={STRIPE_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex justify-center"
+                  >
+                    <Button className="bg-querify-blue hover:bg-blue-700 w-auto px-6 py-2 mb-2">
+                      Pay with Stripe
+                    </Button>
+                  </a>
+                </div>
                 <Button 
                   onClick={() => setShowSignUpModal(true)} 
                   className="bg-green-600 hover:bg-green-700 w-full md:w-auto flex items-center gap-2"
