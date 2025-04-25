@@ -6,13 +6,12 @@ import SignUpModal from "@/components/SignUpModal";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = React.useState(true); // Start with modal open!
 
   useEffect(() => {
     // Set the flag in localStorage so user can sign up
     localStorage.setItem("ai_paid_signup", "yes");
     toast.success("Payment successful! You can now register an account.");
-    // Show SignUpModal after a short delay, or you can use a button below
   }, []);
 
   return (
@@ -22,12 +21,11 @@ const PaymentSuccess: React.FC = () => {
         <p className="text-md text-gray-700 text-center">
           Thank you for your payment! Registration is now unlocked.<br />
         </p>
-        <button
-          className="py-3 px-6 bg-querify-blue text-white font-semibold rounded-full hover:bg-blue-700 transition-colors text-lg"
-          onClick={() => setShow(true)}
-        >
-          Start Registration
-        </button>
+        <div className="w-full flex flex-col items-center gap-2">
+          <span className="text-base text-blue-800 font-semibold">Ready to get started?</span>
+          <span className="text-sm text-blue-700">The registration form will appear shortly.</span>
+        </div>
+        {/* No more "Start Registration" button */}
         <button
           className="text-blue-700 underline text-sm"
           onClick={() => navigate("/")}
