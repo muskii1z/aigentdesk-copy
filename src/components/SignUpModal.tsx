@@ -108,20 +108,24 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
         </div>
 
         {!isPaid && !isSignIn && (
-          <div className="flex flex-col items-center bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-            <div className="text-center text-sm text-blue-800 mb-2 font-semibold">You must complete payment before creating an account.</div>
-            <a
-              href={STRIPE_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-2 w-full"
-              onClick={() => setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500)}
-            >
-              <Button className="w-full bg-querify-blue hover:bg-blue-700">
-                Pay with Stripe
-              </Button>
-            </a>
-            <div className="text-xs text-blue-700 text-center">Already paid? Go ahead and create an account below!</div>
+          <div className="flex flex-col items-center justify-center bg-blue-50 border border-blue-200 rounded-lg p-6 my-3">
+            <div className="text-center text-sm text-blue-800 mb-2 font-semibold">Full Access Required</div>
+            <div className="flex justify-center w-full mb-2">
+              <a
+                href={STRIPE_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
+                onClick={() => setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500)}
+              >
+                <Button className="w-full bg-querify-blue hover:bg-blue-700">
+                  Pay with Stripe
+                </Button>
+              </a>
+            </div>
+            <div className="text-xs text-blue-700 text-center">
+              After paying, come back here to finish creating your account.
+            </div>
           </div>
         )}
 
