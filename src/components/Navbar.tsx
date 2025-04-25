@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ const Navbar: React.FC = () => {
   };
 
   const handleSignInClick = () => {
+    // Only allow sign-in mode, don't show sign up option
     setIsOpen(true);
   };
 
@@ -64,7 +66,14 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </header>
-      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} defaultView="sign-in" />
+      {/* Always force defaultView="sign-in" for Navbar modal, and don't allow sign up toggle */}
+      <SignUpModal
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        redirectUrl={redirectUrl}
+        defaultView="sign-in"
+        allowRegistration={false}
+      />
     </>
   );
 };

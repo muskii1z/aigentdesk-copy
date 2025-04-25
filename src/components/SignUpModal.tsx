@@ -36,7 +36,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
   const id = useId();
   const { registerUser } = useQuerify();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSignIn, setIsSignIn] = useState(defaultView === 'sign-in');
+
+  // After payment (allowRegistration), lock into sign-up mode only
+  const isSignInModeRestricted = allowRegistration;
+  const [isSignIn, setIsSignIn] = useState(defaultView === 'sign-in' && !allowRegistration);
+
   const navigate = useNavigate();
 
   // Payment check for signup only
@@ -94,12 +98,20 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
   };
 
   const toggleMode = () => {
-    setIsSignIn((prev) => !prev);
+    // Disallow toggle if post-payment sign up!
+    if (!isSignInModeRestricted) setIsSignIn((prev) => !prev);
   };
 
   const onStripeClick = () => {
     setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500);
   };
+
+  // Enforce locked sign-up mode after payment (no toggle)
+  const showToggle = !isSignInModeRestricted;
+
+  // Lock into proper view
+  const showSignInForm = isSignIn && !isSignInModeRestricted;
+  const showPaywall = !isSignIn && !isPaid && !allowRegistration;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -108,21 +120,23 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
           <div className="text-3xl font-bold text-querify-blue">AI</div>
           <DialogHeader>
             <DialogTitle className="sm:text-center">
-              {isSignIn ? 'Welcome Back! 👋' : "Let's Connect 💖"}
+              {showSignInForm
+                ? 'Welcome Back! 👋'
+                : "Let's Connect 💖"}
             </DialogTitle>
             <DialogDescription className="sm:text-center whitespace-pre-line">
-              {isSignIn
+              {showSignInForm
                 ? "Great to see you again! Let's continue our AI journey together."
                 : "Is it weird to say... I feel a connection? 😍\nBut before I spill all my secrets, I need to know your name.\nMake an account so we can take this to the next level —\nYou ask questions, I impress you with answers. It's a match made in AI heaven 💬❤️"
               }
             </DialogDescription>
           </DialogHeader>
         </div>
-        {/* If not in sign-in mode, display paywall or the full registration form depending on allowRegistration */}
-        {!isSignIn && !isPaid && (
+        {/* Show paywall if required */}
+        {showPaywall && (
           <SignUpPaywallSection onStripeClick={onStripeClick} />
         )}
-        {isSignIn ? (
+        {showSignInForm ? (
           <SignInForm onSuccess={() => onOpenChange(false)} redirectUrl={redirectUrl} />
         ) : (
           <SignUpFormSection
@@ -133,17 +147,19 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             showFields={isPaid} // Pass prop to only show fields when paid AND allowed
           />
         )}
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={toggleMode}
-            className="text-sm text-muted-foreground hover:text-foreground underline"
-          >
-            {isSignIn
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
-          </button>
-        </div>
+        {showToggle && (
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-sm text-muted-foreground hover:text-foreground underline"
+            >
+              {isSignIn
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"}
+            </button>
+          </div>
+        )}
         <p className="text-center text-xs text-muted-foreground">
           By using this service you agree to our{" "}
           <a className="underline hover:no-underline" href="#">
