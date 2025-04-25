@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { useId } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -23,8 +22,6 @@ interface SignUpModalProps {
   redirectUrl?: string;
   defaultView?: 'sign-up' | 'sign-in';
 }
-
-const STRIPE_LINK = 'https://buy.stripe.com/fZe3cz3k76Xw2Xu5kk';
 
 const SignUpModal: React.FC<SignUpModalProps> = ({
   open,
@@ -92,7 +89,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
 
   // Ensures toggling always resets modal to correct state & prompt
   const toggleMode = () => {
-    setIsSignIn(!isSignIn);
+    setIsSignIn((prev) => !prev);
   };
 
   // Forward payment event
@@ -103,12 +100,14 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
+        {/* Always show the paywall section on top */}
+        <SignUpPaywallSection onStripeClick={onStripeClick} />
         <div className="flex flex-col items-center gap-2">
-          <div className="text-3xl font-bold text-querify-blue">
-            AI
-          </div>
+          <div className="text-3xl font-bold text-querify-blue">AI</div>
           <DialogHeader>
-            <DialogTitle className="sm:text-center">{isSignIn ? 'Welcome Back! 👋' : "Let's Connect 💖"}</DialogTitle>
+            <DialogTitle className="sm:text-center">
+              {isSignIn ? 'Welcome Back! 👋' : "Let's Connect 💖"}
+            </DialogTitle>
             <DialogDescription className="sm:text-center whitespace-pre-line">
               {isSignIn
                 ? "Great to see you again! Let's continue our AI journey together."
@@ -117,21 +116,16 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        {/* Paywall section for sign-up only, always rendered if not paid */}
-        {!isPaid && !isSignIn && (
-          <SignUpPaywallSection onStripeClick={onStripeClick} />
-        )}
+        {/* Form logic - blocks signup if not paid, always shows paywall above */}
         {isSignIn ? (
           <SignInForm onSuccess={() => onOpenChange(false)} redirectUrl={redirectUrl} />
         ) : (
-          isPaid && (
-            <SignUpFormSection
-              id={id}
-              handleSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              isPaid={isPaid}
-            />
-          )
+          <SignUpFormSection
+            id={id}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            isPaid={isPaid}
+          />
         )}
         <div className="text-center">
           <button
@@ -139,13 +133,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             onClick={toggleMode}
             className="text-sm text-muted-foreground hover:text-foreground underline"
           >
-            {/* toggles between sign-in and sign-up modes, always opening the same modal */}
             {isSignIn
               ? "Don't have an account? Sign up"
               : "Already have an account? Sign in"}
           </button>
         </div>
-
         <p className="text-center text-xs text-muted-foreground">
           By using this service you agree to our{" "}
           <a className="underline hover:no-underline" href="#">
