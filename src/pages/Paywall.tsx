@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import SignUpModal from '@/components/SignUpModal';
 
-const STRIPE_LINK = 'https://buy.stripe.com/fZe3cz3k76Xw2Xu5kk';
+const STRIPE_LINK = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
 
 const Paywall: React.FC = () => {
   const [showSignUp, setShowSignUp] = useState(false);

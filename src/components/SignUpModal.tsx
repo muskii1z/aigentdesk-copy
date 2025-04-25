@@ -22,6 +22,8 @@ interface SignUpModalProps {
   defaultView?: 'sign-up' | 'sign-in';
 }
 
+const STRIPE_LINK = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
+
 const SignUpModal: React.FC<SignUpModalProps> = ({
   open,
   onOpenChange,

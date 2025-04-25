@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuerify } from '@/context/QuerifyContext';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import SignUpModal from './SignUpModal';
 import ReactMarkdown from 'react-markdown';
 
-const STRIPE_LINK = 'https://buy.stripe.com/fZe3cz3k76Xw2Xu5kk';
+const STRIPE_LINK = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
 
 const isPaid = () => typeof window !== 'undefined' && localStorage.getItem('ai_paid_signup') === 'yes';
 
