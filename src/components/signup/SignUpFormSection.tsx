@@ -59,9 +59,19 @@ const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({
       className="w-full bg-querify-blue hover:bg-blue-700"
       disabled={isSubmitting || !isPaid}
     >
-      {isSubmitting ? "Creating account..." : "Sign up"}
+      {isSubmitting
+        ? "Creating account..."
+        : isPaid
+          ? "Sign up"
+          : "Pay to unlock sign up"}
     </Button>
+    {!isPaid && (
+      <div className="text-center text-sm text-blue-700 font-semibold bg-blue-50 rounded px-3 py-2 mt-2">
+        Please pay for full access to enable registration.
+      </div>
+    )}
   </form>
 );
 
 export default SignUpFormSection;
+
