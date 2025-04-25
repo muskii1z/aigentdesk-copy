@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,14 +28,8 @@ const Navbar: React.FC = () => {
     navigate('/ask');
   };
 
-  // Check paid flag for signup
   const handleSignInClick = () => {
-    const paid = localStorage.getItem('ai_paid_signup');
-    if (paid === 'yes') {
-      setIsOpen(true);
-    } else {
-      navigate('/paywall');
-    }
+    setIsOpen(true);
   };
 
   return (

@@ -33,7 +33,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   const [isSignIn, setIsSignIn] = useState(defaultView === 'sign-in');
   const navigate = useNavigate();
 
-  // Payment check for signup only (but don't overlay the whole app)
+  // Payment check for signup only
   const isPaid = typeof window !== "undefined" && localStorage.getItem('ai_paid_signup') === 'yes';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,6 +115,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
               target="_blank"
               rel="noopener noreferrer"
               className="mb-2 w-full"
+              onClick={() => setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500)}
             >
               <Button className="w-full bg-querify-blue hover:bg-blue-700">
                 Pay with Stripe
@@ -194,4 +195,3 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
 };
 
 export default SignUpModal;
-
