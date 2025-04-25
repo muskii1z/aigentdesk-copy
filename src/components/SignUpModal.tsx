@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,8 @@ interface SignUpModalProps {
   defaultView?: 'sign-up' | 'sign-in';
 }
 
+const STRIPE_LINK = 'https://buy.stripe.com/fZe3cz3k76Xw2Xu5kk';
+
 const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl, defaultView = 'sign-up' }) => {
   const id = useId();
   const { registerUser } = useQuerify();
@@ -30,36 +33,18 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   const [isSignIn, setIsSignIn] = useState(defaultView === 'sign-in');
   const navigate = useNavigate();
 
-  // Restrict access if not paid
-  if (typeof window !== 'undefined') {
-    const paid = localStorage.getItem('ai_paid_signup');
-    if (paid !== 'yes') {
-      // Optionally close modal if open, and inform user
-      if (open && typeof onOpenChange === "function") {
-        onOpenChange(false);
-      }
-      return (
-        <div className="fixed inset-0 z-[200] bg-black/30 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-sm">
-            <div className="text-xl font-bold text-querify-blue mb-2">Payment Required</div>
-            <p className="text-gray-700 mb-4">
-              You must complete payment before creating an account.
-            </p>
-            <a
-              href="/paywall"
-              className="px-4 py-2 rounded bg-querify-blue text-white hover:bg-blue-700 transition"
-            >
-              Go to Paywall
-            </a>
-          </div>
-        </div>
-      );
-    }
-  }
+  // Payment check for signup only (but don't overlay the whole app)
+  const isPaid = typeof window !== "undefined" && localStorage.getItem('ai_paid_signup') === 'yes';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    if (!isPaid) {
+      toast.error("You must pay for access before signing up.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
@@ -85,10 +70,10 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
           email,
           phone: ''
         });
-        
+
         toast.success("Account created successfully! You can now ask questions.");
         onOpenChange(false);
-        
+
         if (redirectUrl) {
           navigate(redirectUrl);
         }
@@ -122,6 +107,23 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
           </DialogHeader>
         </div>
 
+        {!isPaid && !isSignIn && (
+          <div className="flex flex-col items-center bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+            <div className="text-center text-sm text-blue-800 mb-2 font-semibold">You must complete payment before creating an account.</div>
+            <a
+              href={STRIPE_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-2 w-full"
+            >
+              <Button className="w-full bg-querify-blue hover:bg-blue-700">
+                Pay with Stripe
+              </Button>
+            </a>
+            <div className="text-xs text-blue-700 text-center">Already paid? Go ahead and create an account below!</div>
+          </div>
+        )}
+
         {isSignIn ? (
           <SignInForm onSuccess={() => onOpenChange(false)} redirectUrl={redirectUrl} />
         ) : (
@@ -135,7 +137,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
                   placeholder="John Doe" 
                   type="text" 
                   required 
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isPaid}
                 />
               </div>
               <div className="space-y-2">
@@ -146,7 +148,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
                   placeholder="john@example.com" 
                   type="email" 
                   required 
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isPaid}
                 />
               </div>
               <div className="space-y-2">
@@ -158,11 +160,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
                   type="password" 
                   required 
                   minLength={6}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isPaid}
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-querify-blue hover:bg-blue-700" disabled={isSubmitting}>
+            <Button type="submit" className="w-full bg-querify-blue hover:bg-blue-700" disabled={isSubmitting || !isPaid}>
               {isSubmitting ? 'Creating account...' : 'Sign up'}
             </Button>
           </form>
@@ -192,3 +194,4 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
 };
 
 export default SignUpModal;
+

@@ -3,10 +3,14 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuerify } from '@/context/QuerifyContext';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, Bot, UserPlus } from 'lucide-react';
+import { MessageCircle, Bot, UserPlus, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SignUpModal from './SignUpModal';
 import ReactMarkdown from 'react-markdown';
+
+const STRIPE_LINK = 'https://buy.stripe.com/fZe3cz3k76Xw2Xu5kk';
+
+const isPaid = () => typeof window !== 'undefined' && localStorage.getItem('ai_paid_signup') === 'yes';
 
 const QuestionAnswer: React.FC = () => {
   const { questions, user, isRegistrationRequired } = useQuerify();
@@ -16,22 +20,34 @@ const QuestionAnswer: React.FC = () => {
     return (
       <Card className="bg-muted/30">
         <CardContent className="p-6">
-          {isRegistrationRequired && !user ? (
+          {isRegistrationRequired && !(user && isPaid()) ? (
             <div className="flex flex-col items-center space-y-4">
+              <Lock className="h-8 w-8 text-blue-700" />
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-blue-700 mb-2">Sign up to get AI answers</h3>
+                <h3 className="text-lg font-semibold text-blue-700 mb-2">Full Access Required</h3>
                 <p className="text-sm text-blue-600 mb-4">
-                  Create a free account to ask questions and see expert AI responses.
+                  To view answers, first pay and create your account.
                 </p>
               </div>
+              <a
+                href={STRIPE_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
+              >
+                <Button className="bg-querify-blue hover:bg-blue-700 w-full md:w-auto mb-2">
+                  Pay with Stripe
+                </Button>
+              </a>
               <Button 
                 onClick={() => setShowSignUpModal(true)} 
-                className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto"
+                className="bg-green-600 hover:bg-green-700 w-full md:w-auto flex items-center gap-2"
                 size="lg"
               >
                 <UserPlus className="h-4 w-4" />
                 Create Account
               </Button>
+              <span className="text-xs text-blue-700 text-center">Already paid? Just sign up or sign in to unlock!</span>
               <SignUpModal 
                 open={showSignUpModal} 
                 onOpenChange={setShowSignUpModal} 
@@ -68,22 +84,34 @@ const QuestionAnswer: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="py-4">
-            {isRegistrationRequired && !user ? (
+            {!(user && isPaid()) ? (
               <div className="flex flex-col items-center p-6 bg-blue-50 rounded-md space-y-4">
+                <Lock className="h-8 w-8 text-blue-700" />
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-blue-700 mb-2">Sign up to view your answer</h3>
+                  <h3 className="text-lg font-semibold text-blue-700 mb-2">Full Access Required</h3>
                   <p className="text-sm text-blue-600 mb-4">
-                    Create a free account to see the answers to your questions.
+                    To see your answer, please pay and register.
                   </p>
                 </div>
+                <a
+                  href={STRIPE_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full"
+                >
+                  <Button className="bg-querify-blue hover:bg-blue-700 w-full md:w-auto mb-2">
+                    Pay with Stripe
+                  </Button>
+                </a>
                 <Button 
                   onClick={() => setShowSignUpModal(true)} 
-                  className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto"
+                  className="bg-green-600 hover:bg-green-700 w-full md:w-auto flex items-center gap-2"
                   size="lg"
                 >
                   <UserPlus className="h-4 w-4" />
                   Create Account
                 </Button>
+                <span className="text-xs text-blue-700 text-center">Already paid? Just sign up or sign in to unlock!</span>
               </div>
             ) : (
               <div className="flex items-start gap-3">
