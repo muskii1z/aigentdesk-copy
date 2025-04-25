@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from 'react-router-dom';
 import SignInForm from './SignInForm';
+import { Lock } from "lucide-react";
 
 interface SignUpModalProps {
   open: boolean;
@@ -85,6 +86,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
     }
   };
 
+  // Ensures toggling always resets modal to correct state & prompt
   const toggleMode = () => {
     setIsSignIn(!isSignIn);
   };
@@ -107,18 +109,23 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
           </DialogHeader>
         </div>
 
+        {/* Centered paywall section always rendered for sign-up if not isPaid */}
         {!isPaid && !isSignIn && (
-          <div className="flex flex-col items-center justify-center bg-blue-50 border border-blue-200 rounded-lg p-6 my-3">
-            <div className="text-center text-sm text-blue-800 mb-2 font-semibold">Full Access Required</div>
+          <div className="flex flex-col items-center justify-center bg-blue-50 border border-blue-200 rounded-lg p-8 my-3 text-center">
+            <Lock className="h-8 w-8 mb-2 text-blue-700" />
+            <div className="text-lg font-semibold text-blue-800 mb-1">Full Access Required</div>
+            <div className="text-blue-700 mb-3 text-sm">
+              To create an account, please pay for full access.
+            </div>
             <div className="flex justify-center w-full mb-2">
               <a
                 href={STRIPE_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full"
+                className="w-full flex justify-center"
                 onClick={() => setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500)}
               >
-                <Button className="w-full bg-querify-blue hover:bg-blue-700">
+                <Button className="bg-querify-blue hover:bg-blue-700 px-6 py-2 w-auto mx-auto">
                   Pay with Stripe
                 </Button>
               </a>
@@ -129,50 +136,55 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
           </div>
         )}
 
+        {/* For sign-in, show SignInForm.
+            For sign-up AND paid, show the registration form.
+            If user is not paid, just show the payment block above and no form. */}
         {isSignIn ? (
           <SignInForm onSuccess={() => onOpenChange(false)} redirectUrl={redirectUrl} />
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor={`${id}-name`}>Full name</Label>
-                <Input 
-                  id={`${id}-name`} 
-                  name="name"
-                  placeholder="John Doe" 
-                  type="text" 
-                  required 
-                  disabled={isSubmitting || !isPaid}
-                />
+          isPaid && (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`${id}-name`}>Full name</Label>
+                  <Input 
+                    id={`${id}-name`} 
+                    name="name"
+                    placeholder="John Doe" 
+                    type="text" 
+                    required 
+                    disabled={isSubmitting || !isPaid}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${id}-email`}>Email</Label>
+                  <Input 
+                    id={`${id}-email`} 
+                    name="email"
+                    placeholder="john@example.com" 
+                    type="email" 
+                    required 
+                    disabled={isSubmitting || !isPaid}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${id}-password`}>Password</Label>
+                  <Input 
+                    id={`${id}-password`} 
+                    name="password"
+                    placeholder="••••••••" 
+                    type="password" 
+                    required 
+                    minLength={6}
+                    disabled={isSubmitting || !isPaid}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${id}-email`}>Email</Label>
-                <Input 
-                  id={`${id}-email`} 
-                  name="email"
-                  placeholder="john@example.com" 
-                  type="email" 
-                  required 
-                  disabled={isSubmitting || !isPaid}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`${id}-password`}>Password</Label>
-                <Input 
-                  id={`${id}-password`} 
-                  name="password"
-                  placeholder="••••••••" 
-                  type="password" 
-                  required 
-                  minLength={6}
-                  disabled={isSubmitting || !isPaid}
-                />
-              </div>
-            </div>
-            <Button type="submit" className="w-full bg-querify-blue hover:bg-blue-700" disabled={isSubmitting || !isPaid}>
-              {isSubmitting ? 'Creating account...' : 'Sign up'}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full bg-querify-blue hover:bg-blue-700" disabled={isSubmitting || !isPaid}>
+                {isSubmitting ? 'Creating account...' : 'Sign up'}
+              </Button>
+            </form>
+          )
         )}
 
         <div className="text-center">
@@ -181,6 +193,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
             onClick={toggleMode}
             className="text-sm text-muted-foreground hover:text-foreground underline"
           >
+            {/* toggles between sign-in and sign-up modes, always opening the same modal */}
             {isSignIn 
               ? "Don't have an account? Sign up" 
               : "Already have an account? Sign in"}
