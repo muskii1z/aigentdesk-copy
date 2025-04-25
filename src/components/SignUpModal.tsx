@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useId } from "react";
 import {
@@ -87,12 +86,10 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
     }
   };
 
-  // Ensures toggling always resets modal to correct state & prompt
   const toggleMode = () => {
     setIsSignIn((prev) => !prev);
   };
 
-  // Forward payment event
   const onStripeClick = () => {
     setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500);
   };
@@ -100,8 +97,6 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        {/* Always show the paywall section on top */}
-        <SignUpPaywallSection onStripeClick={onStripeClick} />
         <div className="flex flex-col items-center gap-2">
           <div className="text-3xl font-bold text-querify-blue">AI</div>
           <DialogHeader>
@@ -116,7 +111,9 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        {/* Form logic - blocks signup if not paid, always shows paywall above */}
+        {!isSignIn && (
+          <SignUpPaywallSection onStripeClick={onStripeClick} />
+        )}
         {isSignIn ? (
           <SignInForm onSuccess={() => onOpenChange(false)} redirectUrl={redirectUrl} />
         ) : (
