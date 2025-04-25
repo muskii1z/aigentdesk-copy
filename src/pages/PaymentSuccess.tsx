@@ -6,7 +6,7 @@ import SignUpModal from "@/components/SignUpModal";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
-  const [show, setShow] = React.useState(true); // Start with modal open!
+  const [show, setShow] = React.useState(true); // Modal opens after payment
 
   useEffect(() => {
     // Set the flag in localStorage so user can sign up
@@ -25,7 +25,6 @@ const PaymentSuccess: React.FC = () => {
           <span className="text-base text-blue-800 font-semibold">Ready to get started?</span>
           <span className="text-sm text-blue-700">The registration form will appear shortly.</span>
         </div>
-        {/* No more "Start Registration" button */}
         <button
           className="text-blue-700 underline text-sm"
           onClick={() => navigate("/")}
@@ -33,10 +32,10 @@ const PaymentSuccess: React.FC = () => {
           Back to Home
         </button>
       </div>
-      <SignUpModal open={show} onOpenChange={setShow} defaultView="sign-up" redirectUrl="/" />
+      {/* Pass allowRegistration to unlock form fields after payment */}
+      <SignUpModal open={show} onOpenChange={setShow} defaultView="sign-up" redirectUrl="/" allowRegistration />
     </div>
   );
 };
 
 export default PaymentSuccess;
-

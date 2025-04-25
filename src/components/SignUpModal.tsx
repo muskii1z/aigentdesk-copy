@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useId } from "react";
 import {
@@ -20,6 +21,7 @@ interface SignUpModalProps {
   onOpenChange: (open: boolean) => void;
   redirectUrl?: string;
   defaultView?: 'sign-up' | 'sign-in';
+  allowRegistration?: boolean; // NEW: allow full registration form
 }
 
 const STRIPE_LINK = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
@@ -28,7 +30,8 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
   open,
   onOpenChange,
   redirectUrl,
-  defaultView = 'sign-up'
+  defaultView = 'sign-up',
+  allowRegistration = false,
 }) => {
   const id = useId();
   const { registerUser } = useQuerify();
@@ -37,7 +40,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
   const navigate = useNavigate();
 
   // Payment check for signup only
-  const isPaid = typeof window !== "undefined" && localStorage.getItem('ai_paid_signup') === 'yes';
+  const isPaid = (typeof window !== "undefined" && localStorage.getItem('ai_paid_signup') === 'yes') || allowRegistration;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -115,7 +118,8 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             </DialogDescription>
           </DialogHeader>
         </div>
-        {!isSignIn && (
+        {/* If not in sign-in mode, display paywall or the full registration form depending on allowRegistration */}
+        {!isSignIn && !isPaid && (
           <SignUpPaywallSection onStripeClick={onStripeClick} />
         )}
         {isSignIn ? (
@@ -126,6 +130,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             handleSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             isPaid={isPaid}
+            showFields={isPaid} // Pass prop to only show fields when paid AND allowed
           />
         )}
         <div className="text-center">
