@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import SignUpModal from '@/components/SignUpModal';
 
-const STRIPE_LINK = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
+const STRIPE_LINK_BASE = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
+const getSuccessUrl = () => `${window.location.origin}/payment-success`;
 
 const Paywall: React.FC = () => {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -20,6 +21,9 @@ const Paywall: React.FC = () => {
     );
   }
 
+  // Compose Stripe link with success_url param for Stripe
+  const stripeLink = STRIPE_LINK_BASE + `?success_url=${encodeURIComponent(getSuccessUrl())}`;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
       <div className="max-w-lg rounded-xl p-10 shadow-xl bg-white border border-blue-100 space-y-8 flex flex-col items-center">
@@ -30,7 +34,7 @@ const Paywall: React.FC = () => {
           To register and ask questions, you must first purchase access.
         </p>
         <a
-          href={STRIPE_LINK}
+          href={stripeLink}
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full"
@@ -40,7 +44,7 @@ const Paywall: React.FC = () => {
           </button>
         </a>
         <p className="text-gray-600 text-center">
-          After completing payment, return to this page and click below to unlock sign up:
+          After completing payment, you'll be sent back here to unlock sign up:
         </p>
         <button
           className="w-full py-2 px-6 bg-green-600 text-white font-medium rounded-full hover:bg-green-700 transition-colors"

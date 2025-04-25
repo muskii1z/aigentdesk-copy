@@ -10,6 +10,7 @@ import AskPage from "./pages/AskPage";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Paywall from './pages/Paywall';
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/ask" element={<AskPage />} />
               <Route path="/about" element={<About />} />
               <Route path="/paywall" element={<Paywall />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
