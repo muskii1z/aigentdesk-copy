@@ -9,14 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useQuerify } from '@/context/QuerifyContext';
 import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from 'react-router-dom';
 import SignInForm from './SignInForm';
-import { Lock } from "lucide-react";
+import SignUpPaywallSection from './signup/SignUpPaywallSection';
+import SignUpFormSection from './signup/SignUpFormSection';
 
 interface SignUpModalProps {
   open: boolean;
@@ -27,7 +26,12 @@ interface SignUpModalProps {
 
 const STRIPE_LINK = 'https://buy.stripe.com/fZe3cz3k76Xw2Xu5kk';
 
-const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectUrl, defaultView = 'sign-up' }) => {
+const SignUpModal: React.FC<SignUpModalProps> = ({
+  open,
+  onOpenChange,
+  redirectUrl,
+  defaultView = 'sign-up'
+}) => {
   const id = useId();
   const { registerUser } = useQuerify();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,6 +95,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
     setIsSignIn(!isSignIn);
   };
 
+  // Forward payment event
+  const onStripeClick = () => {
+    setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -101,92 +110,29 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
           <DialogHeader>
             <DialogTitle className="sm:text-center">{isSignIn ? 'Welcome Back! 👋' : "Let's Connect 💖"}</DialogTitle>
             <DialogDescription className="sm:text-center whitespace-pre-line">
-              {isSignIn 
+              {isSignIn
                 ? "Great to see you again! Let's continue our AI journey together."
                 : "Is it weird to say... I feel a connection? 😍\nBut before I spill all my secrets, I need to know your name.\nMake an account so we can take this to the next level —\nYou ask questions, I impress you with answers. It's a match made in AI heaven 💬❤️"
               }
             </DialogDescription>
           </DialogHeader>
         </div>
-
-        {/* Centered paywall section always rendered for sign-up if not isPaid */}
+        {/* Paywall section for sign-up only, always rendered if not paid */}
         {!isPaid && !isSignIn && (
-          <div className="flex flex-col items-center justify-center bg-blue-50 border border-blue-200 rounded-lg p-8 my-3 text-center">
-            <Lock className="h-8 w-8 mb-2 text-blue-700" />
-            <div className="text-lg font-semibold text-blue-800 mb-1">Full Access Required</div>
-            <div className="text-blue-700 mb-3 text-sm">
-              To create an account, please pay for full access.
-            </div>
-            <div className="flex justify-center w-full mb-2">
-              <a
-                href={STRIPE_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex justify-center"
-                onClick={() => setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500)}
-              >
-                <Button className="bg-querify-blue hover:bg-blue-700 px-6 py-2 w-auto mx-auto">
-                  Pay with Stripe
-                </Button>
-              </a>
-            </div>
-            <div className="text-xs text-blue-700 text-center">
-              After paying, come back here to finish creating your account.
-            </div>
-          </div>
+          <SignUpPaywallSection onStripeClick={onStripeClick} />
         )}
-
-        {/* For sign-in, show SignInForm.
-            For sign-up AND paid, show the registration form.
-            If user is not paid, just show the payment block above and no form. */}
         {isSignIn ? (
           <SignInForm onSuccess={() => onOpenChange(false)} redirectUrl={redirectUrl} />
         ) : (
           isPaid && (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor={`${id}-name`}>Full name</Label>
-                  <Input 
-                    id={`${id}-name`} 
-                    name="name"
-                    placeholder="John Doe" 
-                    type="text" 
-                    required 
-                    disabled={isSubmitting || !isPaid}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${id}-email`}>Email</Label>
-                  <Input 
-                    id={`${id}-email`} 
-                    name="email"
-                    placeholder="john@example.com" 
-                    type="email" 
-                    required 
-                    disabled={isSubmitting || !isPaid}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${id}-password`}>Password</Label>
-                  <Input 
-                    id={`${id}-password`} 
-                    name="password"
-                    placeholder="••••••••" 
-                    type="password" 
-                    required 
-                    minLength={6}
-                    disabled={isSubmitting || !isPaid}
-                  />
-                </div>
-              </div>
-              <Button type="submit" className="w-full bg-querify-blue hover:bg-blue-700" disabled={isSubmitting || !isPaid}>
-                {isSubmitting ? 'Creating account...' : 'Sign up'}
-              </Button>
-            </form>
+            <SignUpFormSection
+              id={id}
+              handleSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+              isPaid={isPaid}
+            />
           )
         )}
-
         <div className="text-center">
           <button
             type="button"
@@ -194,8 +140,8 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
             className="text-sm text-muted-foreground hover:text-foreground underline"
           >
             {/* toggles between sign-in and sign-up modes, always opening the same modal */}
-            {isSignIn 
-              ? "Don't have an account? Sign up" 
+            {isSignIn
+              ? "Don't have an account? Sign up"
               : "Already have an account? Sign in"}
           </button>
         </div>
