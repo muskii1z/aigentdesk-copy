@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,33 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSignIn, setIsSignIn] = useState(defaultView === 'sign-in');
   const navigate = useNavigate();
+
+  // Restrict access if not paid
+  if (typeof window !== 'undefined') {
+    const paid = localStorage.getItem('ai_paid_signup');
+    if (paid !== 'yes') {
+      // Optionally close modal if open, and inform user
+      if (open && typeof onOpenChange === "function") {
+        onOpenChange(false);
+      }
+      return (
+        <div className="fixed inset-0 z-[200] bg-black/30 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-sm">
+            <div className="text-xl font-bold text-querify-blue mb-2">Payment Required</div>
+            <p className="text-gray-700 mb-4">
+              You must complete payment before creating an account.
+            </p>
+            <a
+              href="/paywall"
+              className="px-4 py-2 rounded bg-querify-blue text-white hover:bg-blue-700 transition"
+            >
+              Go to Paywall
+            </a>
+          </div>
+        </div>
+      );
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

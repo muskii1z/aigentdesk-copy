@@ -29,6 +29,16 @@ const Navbar: React.FC = () => {
     navigate('/ask');
   };
 
+  // Check paid flag for signup
+  const handleSignInClick = () => {
+    const paid = localStorage.getItem('ai_paid_signup');
+    if (paid === 'yes') {
+      setIsOpen(true);
+    } else {
+      navigate('/paywall');
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/30">
@@ -37,21 +47,18 @@ const Navbar: React.FC = () => {
             <Link to="/" className="flex items-center">
               <div className="font-bold text-xl md:text-2xl text-querify-blue">AIgentDesk</div>
             </Link>
-            
             <div className="hidden md:inline-block font-medium text-querify-blue text-sm py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
               Powered by AIgentic Bros
             </div>
           </div>
-
           <div className="hidden md:flex flex-1 justify-center">
             <Menu list={menuItems} />
           </div>
-
           <div className="flex items-center gap-3 md:gap-4">
             <Button 
               variant="outline"
               className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
-              onClick={() => setIsOpen(true)}
+              onClick={handleSignInClick}
             >
               Sign In
             </Button>
