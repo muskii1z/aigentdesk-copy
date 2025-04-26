@@ -31,7 +31,7 @@ const Index = () => {
           height: 765,
           src: "/lovable-uploads/f9322daa-f54e-4447-b957-403257ba769d.png"
         }}
-        className="bg-gradient-to-br from-blue-50 to-white hero-pattern"
+        className="bg-gradient-to-br from-blue-50 to-white hero-pattern !py-8 md:!py-12 lg:!py-16"
         renderCustomContent={() => (
           <div className="w-full pt-6 px-4 sm:px-6 lg:px-8 flex justify-center">
             <div className="w-full max-w-3xl aspect-video rounded-xl overflow-hidden shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)] border border-querify-blue/10 bg-black animate-appear opacity-0 [animation-delay:700ms]">

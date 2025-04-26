@@ -16,30 +16,16 @@ const Footer: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-2 gap-8">
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium">Product</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/pricing" className="text-sm text-muted-foreground hover:text-querify-blue">Pricing</Link>
-                </li>
-                <li>
-                  <Link to="/about" className="text-sm text-muted-foreground hover:text-querify-blue">About</Link>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/privacy" className="text-sm text-muted-foreground hover:text-querify-blue">Privacy Policy</Link>
-                </li>
-                <li>
-                  <Link to="/terms" className="text-sm text-muted-foreground hover:text-querify-blue">Terms of Service</Link>
-                </li>
-              </ul>
-            </div>
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-querify-blue">Privacy Policy</Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-querify-blue">Terms of Service</Link>
+              </li>
+            </ul>
           </div>
         </div>
         
