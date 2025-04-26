@@ -106,11 +106,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
     setTimeout(() => localStorage.setItem('ai_paid_signup', 'yes'), 1500);
   };
 
-  // Enforce locked sign-up mode after payment (no toggle)
-  const showToggle = !isSignInModeRestricted;
+  // Toggle should ONLY be available if allowRegistration is true (i.e. post-payment)
+  const showToggle = allowRegistration;
 
-  // Lock into proper view
-  const showSignInForm = isSignIn && !isSignInModeRestricted;
+  // Lock into proper view  
+  const showSignInForm = isSignIn && !allowRegistration;
   const showPaywall = !isSignIn && !isPaid && !allowRegistration;
 
   return (
@@ -147,6 +147,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({
             showFields={isPaid} // Pass prop to only show fields when paid AND allowed
           />
         )}
+        {/* Only show sign-in/sign-up toggle if post-payment "allowRegistration" is true */}
         {showToggle && (
           <div className="text-center">
             <button
