@@ -33,7 +33,7 @@ const Index = () => {
         }}
         className="bg-gradient-to-br from-blue-50 to-white hero-pattern"
         renderCustomContent={() => (
-          <div className="w-full pt-12 px-4 sm:px-6 lg:px-8 flex justify-center">
+          <div className="w-full pt-6 px-4 sm:px-6 lg:px-8 flex justify-center">
             <div className="w-full max-w-3xl aspect-video rounded-xl overflow-hidden shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)] border border-querify-blue/10 bg-black animate-appear opacity-0 [animation-delay:700ms]">
               <iframe
                 width="100%"
@@ -50,14 +50,14 @@ const Index = () => {
         )}
       />
 
-      <section className="py-16 bg-blue-50/30">
+      <section className="py-8 bg-blue-50/30">
         <div className="container max-w-screen-xl text-center">
           <h2 className="text-3xl font-bold mb-4 text-querify-blue">Ready to Automate with AI?</h2>
-          <p className="text-lg text-querify-blue/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-querify-blue/80 mb-6 max-w-2xl mx-auto">
             Start asking your AI automation questions today and transform your business.
           </p>
           <Button 
-            className="bg-querify-blue hover:bg-blue-700 text-white px-16 py-8 text-xl font-medium w-72"
+            className="bg-querify-blue hover:bg-blue-700 text-white px-12 py-6 text-xl font-medium"
             onClick={handleAskClick}
             size="lg"
           >
@@ -70,4 +70,3 @@ const Index = () => {
 };
 
 export default Index;
-
