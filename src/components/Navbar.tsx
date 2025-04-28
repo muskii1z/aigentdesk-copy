@@ -6,6 +6,7 @@ import Menu, { IMenu } from '@/components/ui/menu';
 import SignUpModal from '@/components/SignUpModal';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const menuItems: IMenu[] = [
   {
@@ -20,6 +21,12 @@ const menuItems: IMenu[] = [
     url: '/about',
     dropdown: false,
   },
+  {
+    id: 3,
+    title: 'Account',
+    url: '/account',
+    dropdown: false,
+  }
 ];
 
 const Navbar: React.FC = () => {
@@ -28,6 +35,26 @@ const Navbar: React.FC = () => {
 
   const handleSignInClick = () => {
     setIsOpen(true);
+  };
+
+  const handleGetAccess = async () => {
+    if (!user) {
+      setIsOpen(true);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { user_id: user.id }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -46,7 +73,7 @@ const Navbar: React.FC = () => {
             <Menu list={menuItems} />
           </div>
           <div className="flex items-center gap-3 md:gap-4">
-            {!user && (
+            {!user ? (
               <Button 
                 variant="outline"
                 className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
@@ -54,10 +81,10 @@ const Navbar: React.FC = () => {
               >
                 Sign In
               </Button>
-            )}
+            ) : null}
             <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white hidden md:inline-flex"
-              onClick={() => window.location.href = '/ask'}
+              className="bg-querify-blue hover:bg-blue-700 text-white"
+              onClick={handleGetAccess}
             >
               Get Access
             </Button>

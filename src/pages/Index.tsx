@@ -1,14 +1,35 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
+import { useQuerify } from '@/context/QuerifyContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import SubscribeButton from '@/components/SubscribeButton';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useQuerify();
   
-  const handleGetAccess = () => {
-    navigate('/ask');
+  const handleGetAccess = async () => {
+    if (!user) {
+      navigate('/ask');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { user_id: user.id }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to start subscription process');
+    }
   };
 
   return (
@@ -18,7 +39,6 @@ const Index = () => {
         description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
         primaryCta={{
           text: "Get Access",
-          href: "/ask",
           onClick: handleGetAccess,
         }}
         secondaryCta={{
@@ -34,9 +54,6 @@ const Index = () => {
         className="bg-gradient-to-br from-blue-50 to-white hero-pattern !py-8 md:!py-12 lg:!py-16"
         renderCustomContent={() => (
           <>
-            <div className="w-full flex justify-center mb-6">
-              <SubscribeButton />
-            </div>
             <div className="w-full pt-6 px-4 sm:px-6 lg:px-8 flex justify-center">
               <iframe
                 width="100%"
