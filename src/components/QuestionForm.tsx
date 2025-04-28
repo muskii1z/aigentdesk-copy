@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
-import { supabase } from '@/integrations/supabase/client'; // Fixed import path
+import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
 const QuestionForm: React.FC = () => {
@@ -76,18 +76,23 @@ const QuestionForm: React.FC = () => {
     try {
       // Only attempt to check subscription status if user exists
       if (user.id) {
-        const { data: subscriber } = await supabase
+        const { data: subscriber, error } = await supabase
           .from('subscribers')
           .select('paid')
           .eq('user_id', user.id)
           .single();
+
+        if (error) {
+          console.error('Subscription check error:', error);
+          navigate('/paywall');
+          return;
+        }
 
         if (!subscriber?.paid) {
           navigate('/paywall');
           return;
         }
       } else {
-        // Handle case where user exists but has no ID
         navigate('/paywall');
         return;
       }

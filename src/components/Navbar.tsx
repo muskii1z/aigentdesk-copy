@@ -37,11 +37,17 @@ const Navbar: React.FC = () => {
     // Check if user has paid
     const checkPaymentStatus = async () => {
       if (user.id) {
-        const { data: subscriber } = await supabase
+        const { data: subscriber, error } = await supabase
           .from('subscribers')
           .select('paid')
           .eq('user_id', user.id)
-          .maybeSingle(); // Using maybeSingle instead of single to avoid errors
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error checking payment status:', error);
+          navigate('/paywall');
+          return;
+        }
 
         if (!subscriber?.paid) {
           navigate('/paywall');

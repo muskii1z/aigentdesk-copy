@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useQuerify } from "@/context/QuerifyContext"; // Fixed import path
+import { useQuerify } from "@/context/QuerifyContext";
 import Check from "@/assets/icons/Check";
 import Button from "@/components/Button";
-import { supabase } from "@/integrations/supabase/client"; // Added missing import
+import { supabase } from "@/integrations/supabase/client";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
@@ -23,12 +23,17 @@ const PaymentSuccess: React.FC = () => {
             .from('subscribers')
             .upsert({
               user_id: user.id,
-              email: user.email,
+              email: user.email || '',
               paid: true,
               payment_date: new Date().toISOString(),
+            }, {
+              onConflict: 'user_id'
             });
 
-          if (error) throw error;
+          if (error) {
+            console.error('Database error:', error);
+            throw error;
+          }
         }
         
         toast.success('Payment processed successfully!');
