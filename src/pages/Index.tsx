@@ -3,12 +3,11 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 import { useNavigate } from 'react-router-dom';
+import { CreditCard } from 'lucide-react';
 
 const Index = () => {
-  const navigate = useNavigate();
-
-  const handleAskClick = () => {
-    navigate('/ask');
+  const handleGetAccess = () => {
+    window.location.href = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
   };
 
   return (
@@ -17,9 +16,8 @@ const Index = () => {
         title="Answer Your AI Automation Questions"
         description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
         primaryCta={{
-          text: "Ask Your Questions",
-          href: "/ask",
-          onClick: handleAskClick,
+          text: "Get Access",
+          onClick: handleGetAccess,
         }}
         secondaryCta={{
           text: "Learn More",
@@ -49,22 +47,6 @@ const Index = () => {
           </div>
         )}
       />
-
-      <section className="py-8 bg-blue-50/30">
-        <div className="container max-w-screen-xl text-center">
-          <h2 className="text-3xl font-bold mb-4 text-querify-blue">Ready to Automate with AI?</h2>
-          <p className="text-lg text-querify-blue/80 mb-6 max-w-2xl mx-auto">
-            Start asking your AI automation questions today and transform your business.
-          </p>
-          <Button 
-            className="bg-querify-blue hover:bg-blue-700 text-white px-12 py-6 text-xl font-medium"
-            onClick={handleAskClick}
-            size="lg"
-          >
-            Get Started Now
-          </Button>
-        </div>
-      </section>
     </div>
   );
 };
