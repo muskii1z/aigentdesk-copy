@@ -6,6 +6,7 @@ import { useQuerify } from '@/context/QuerifyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -39,11 +40,11 @@ const Index = () => {
         description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
         primaryCta={{
           text: "Get Access",
-          onClick: handleGetAccess,
+          onClick: handleGetAccess
         }}
         secondaryCta={{
           text: "Learn More",
-          href: "/about",
+          href: "/about"
         }}
         mockupImage={{
           alt: "AIgentDesk interface",
@@ -51,22 +52,19 @@ const Index = () => {
           height: 765,
           src: "/lovable-uploads/f9322daa-f54e-4447-b957-403257ba769d.png"
         }}
-        className="bg-gradient-to-br from-blue-50 to-white hero-pattern !py-8 md:!py-12 lg:!py-16"
+        className="bg-gradient-to-br from-blue-50 to-white hero-pattern"
         renderCustomContent={() => (
-          <>
-            <div className="w-full pt-6 px-4 sm:px-6 lg:px-8 flex justify-center">
+          <div className="w-full max-w-3xl mx-auto animate-appear opacity-0 [animation-delay:500ms]">
+            <AspectRatio ratio={16 / 9} className="bg-black rounded-xl overflow-hidden">
               <iframe
-                width="100%"
-                height="100%"
                 src="https://www.youtube.com/embed/UX-R-PkjE84?rel=0&modestbranding=1&controls=1&showinfo=0"
                 title="AIgentDesk Introduction"
-                frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 className="w-full h-full"
-              ></iframe>
-            </div>
-          </>
+              />
+            </AspectRatio>
+          </div>
         )}
       />
     </div>
