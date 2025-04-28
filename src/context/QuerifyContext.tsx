@@ -39,7 +39,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  // Ensure registration is required
+  // Optional registration
   const isRegistrationRequired = true;
 
   const getRandomAnswer = () => {

@@ -10,7 +10,6 @@ import Index from "./pages/Index";
 import AskPage from "./pages/AskPage";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
-import PaymentSuccess from "./pages/PaymentSuccess";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 
@@ -28,7 +27,6 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/ask" element={<AskPage />} />
               <Route path="/about" element={<About />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
             </Route>

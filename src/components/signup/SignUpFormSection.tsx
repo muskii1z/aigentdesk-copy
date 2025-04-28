@@ -8,15 +8,13 @@ interface SignUpFormSectionProps {
   id: string;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
-  isPaid: boolean;
-  showFields?: boolean; // New prop to control form fields visibility
+  showFields?: boolean;
 }
 
 const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({
   id,
   handleSubmit,
   isSubmitting,
-  isPaid,
   showFields = true,
 }) => (
   <form onSubmit={handleSubmit} className="space-y-5">
@@ -31,7 +29,7 @@ const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({
               placeholder="John Doe"
               type="text"
               required
-              disabled={isSubmitting || !isPaid}
+              disabled={isSubmitting}
             />
           </div>
           <div className="space-y-2">
@@ -42,7 +40,7 @@ const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({
               placeholder="john@example.com"
               type="email"
               required
-              disabled={isSubmitting || !isPaid}
+              disabled={isSubmitting}
             />
           </div>
           <div className="space-y-2">
@@ -54,7 +52,7 @@ const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({
               type="password"
               required
               minLength={6}
-              disabled={isSubmitting || !isPaid}
+              disabled={isSubmitting}
             />
           </div>
         </>
@@ -64,19 +62,12 @@ const SignUpFormSection: React.FC<SignUpFormSectionProps> = ({
       <Button
         type="submit"
         className="w-full bg-querify-blue hover:bg-blue-700"
-        disabled={isSubmitting || !isPaid}
+        disabled={isSubmitting}
       >
         {isSubmitting
           ? "Creating account..."
-          : isPaid
-            ? "Sign up"
-            : "Pay to unlock sign up"}
+          : "Sign up"}
       </Button>
-    )}
-    {!isPaid && (
-      <div className="text-center text-sm text-blue-700 font-semibold bg-blue-50 rounded px-3 py-2 mt-2">
-        Please pay for full access to enable registration.
-      </div>
     )}
   </form>
 );

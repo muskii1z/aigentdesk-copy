@@ -3,11 +3,12 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard } from 'lucide-react';
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   const handleGetAccess = () => {
-    window.location.href = 'https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ';
+    navigate('/ask');
   };
 
   return (
@@ -17,7 +18,7 @@ const Index = () => {
         description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
         primaryCta={{
           text: "Get Access",
-          href: "https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ",
+          href: "/ask",
           onClick: handleGetAccess,
         }}
         secondaryCta={{
