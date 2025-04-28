@@ -32,15 +32,7 @@ const Navbar: React.FC = () => {
   const { isOpen, setIsOpen } = useSignUpModal();
   const { user } = useQuerify();
 
-  const handleSignInClick = () => {
-    setIsOpen(true);
-  };
-
   const handleGetAccess = () => {
-    if (!user) {
-      setIsOpen(true);
-      return;
-    }
     window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU';
   };
 
@@ -60,15 +52,6 @@ const Navbar: React.FC = () => {
             <Menu list={menuItems} />
           </div>
           <div className="flex items-center gap-3 md:gap-4">
-            {!user ? (
-              <Button 
-                variant="outline"
-                className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
-                onClick={handleSignInClick}
-              >
-                Sign In
-              </Button>
-            ) : null}
             <Button 
               className="bg-querify-blue hover:bg-blue-700 text-white"
               onClick={handleGetAccess}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
@@ -12,10 +11,6 @@ const Index = () => {
   const { user } = useQuerify();
   
   const handleGetAccess = () => {
-    if (!user) {
-      navigate('/ask');
-      return;
-    }
     window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU';
   };
 
