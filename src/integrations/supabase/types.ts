@@ -16,6 +16,13 @@ export type Database = {
           id: string
           paid: boolean
           payment_date: string | null
+          stripe_customer_id: string | null
+          subscription_end_date: string | null
+          subscription_id: string | null
+          subscription_price_id: string | null
+          subscription_start_date: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
           updated_at: string
           user_id: string
         }
@@ -25,6 +32,13 @@ export type Database = {
           id?: string
           paid?: boolean
           payment_date?: string | null
+          stripe_customer_id?: string | null
+          subscription_end_date?: string | null
+          subscription_id?: string | null
+          subscription_price_id?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
           updated_at?: string
           user_id: string
         }
@@ -34,6 +48,13 @@ export type Database = {
           id?: string
           paid?: boolean
           payment_date?: string | null
+          stripe_customer_id?: string | null
+          subscription_end_date?: string | null
+          subscription_id?: string | null
+          subscription_price_id?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
           updated_at?: string
           user_id?: string
         }
