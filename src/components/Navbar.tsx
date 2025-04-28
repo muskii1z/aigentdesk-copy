@@ -1,10 +1,11 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Menu, { IMenu } from '@/components/ui/menu';
 import SignUpModal from '@/components/SignUpModal';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
+import { useQuerify } from '@/context/QuerifyContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const menuItems: IMenu[] = [
   {
@@ -24,9 +25,30 @@ const menuItems: IMenu[] = [
 const Navbar: React.FC = () => {
   const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
   const navigate = useNavigate();
+  const { user } = useQuerify();
 
   const handleAskClick = () => {
-    navigate('/ask');
+    if (!user) {
+      openModal('/ask');
+      return;
+    }
+
+    // Check if user has paid
+    const checkPaymentStatus = async () => {
+      const { data: subscriber } = await supabase
+        .from('subscribers')
+        .select('paid')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!subscriber?.paid) {
+        navigate('/paywall');
+      } else {
+        navigate('/ask');
+      }
+    };
+
+    checkPaymentStatus();
   };
 
   const handleSignInClick = () => {

@@ -1,39 +1,66 @@
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import SignUpModal from "@/components/SignUpModal";
+import { useQuerify } from "@/hooks/useQuerify";
+import Check from "@/assets/icons/Check";
+import Button from "@/components/Button";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
-  const [show, setShow] = React.useState(true); // Modal opens after payment
+  const [isProcessing, setIsProcessing] = useState(true);
+  const { user } = useQuerify();
 
   useEffect(() => {
-    // Set the flag in localStorage so user can sign up
-    localStorage.setItem("ai_paid_signup", "yes");
-    toast.success("Payment successful! You can now register an account.");
-  }, []);
+    const updatePaymentStatus = async () => {
+      if (!user) return;
+
+      try {
+        const { error } = await supabase
+          .from('subscribers')
+          .upsert({
+            user_id: user.id,
+            email: user.email,
+            paid: true,
+            payment_date: new Date().toISOString(),
+          });
+
+        if (error) throw error;
+        
+        toast.success('Payment processed successfully!');
+        setTimeout(() => {
+          navigate('/ask');
+        }, 2000);
+      } catch (error) {
+        console.error('Error updating payment status:', error);
+        toast.error('Failed to process payment confirmation');
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+
+    updatePaymentStatus();
+  }, [user, navigate]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <div className="bg-white border border-blue-100 rounded-xl shadow-xl max-w-lg p-8 flex flex-col items-center space-y-6">
-        <div className="text-3xl font-bold text-green-600 text-center">Payment Successful 🎉</div>
-        <p className="text-md text-gray-700 text-center">
-          Thank you for your payment! Registration is now unlocked.<br />
-        </p>
-        <div className="w-full flex flex-col items-center gap-2">
-          <span className="text-base text-blue-800 font-semibold">Ready to get started?</span>
-          <span className="text-sm text-blue-700">The registration form will appear shortly.</span>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white">
+      <div className="max-w-lg rounded-xl p-10 shadow-xl bg-white border border-blue-100 space-y-6 text-center">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+          <Check className="h-8 w-8 text-green-600" />
         </div>
-        <button
-          className="text-blue-700 underline text-sm"
-          onClick={() => navigate("/")}
+        <h1 className="text-2xl font-bold text-gray-900">Payment Successful!</h1>
+        <p className="text-gray-600">
+          {isProcessing ? 
+            "We're processing your payment and setting up your access..." :
+            "Your payment has been processed and you now have full access to AI Chat!"}
+        </p>
+        <Button 
+          onClick={() => navigate('/ask')}
+          className="bg-querify-blue hover:bg-blue-700"
         >
-          Back to Home
-        </button>
+          Start Chatting
+        </Button>
       </div>
-      {/* Pass allowRegistration to unlock form fields after payment */}
-      <SignUpModal open={show} onOpenChange={setShow} defaultView="sign-up" redirectUrl="/" allowRegistration />
     </div>
   );
 };

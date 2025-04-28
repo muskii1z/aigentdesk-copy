@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -6,12 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
+import { supabase } from '@/lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { addQuestion, user } = useQuerify();
   const { openModal } = useSignUpModal();
+  const navigate = useNavigate();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -65,22 +67,27 @@ const QuestionForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!question.trim()) return;
-    
-    // Check if user is logged in
     if (!user) {
-      // If not logged in, open the sign-up modal
       openModal('/ask');
       return;
     }
-    
+
+    const { data: subscriber } = await supabase
+      .from('subscribers')
+      .select('paid')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!subscriber?.paid) {
+      navigate('/paywall');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // Send to webhook and wait for response
       const webhookResponse = await sendToWebhook(question);
       
-      // Add question and the webhook response to the context
       await addQuestion(question, webhookResponse);
       toast.success('Question sent successfully!');
       setQuestion('');
