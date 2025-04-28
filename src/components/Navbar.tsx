@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -37,24 +36,12 @@ const Navbar: React.FC = () => {
     setIsOpen(true);
   };
 
-  const handleGetAccess = async () => {
+  const handleGetAccess = () => {
     if (!user) {
       setIsOpen(true);
       return;
     }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { user_id: user.id }
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU';
   };
 
   return (

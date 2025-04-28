@@ -3,7 +3,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 import { useQuerify } from '@/context/QuerifyContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -12,25 +11,12 @@ const Index = () => {
   const navigate = useNavigate();
   const { user } = useQuerify();
   
-  const handleGetAccess = async () => {
+  const handleGetAccess = () => {
     if (!user) {
       navigate('/ask');
       return;
     }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { user_id: user.id }
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to start subscription process');
-    }
+    window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU';
   };
 
   return (
