@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import SignUpModal from "@/components/SignUpModal";
-import { useQuerify } from "@/hooks/useQuerify";
+import { useQuerify } from "@/context/QuerifyContext"; // Fixed import path
 import Check from "@/assets/icons/Check";
 import Button from "@/components/Button";
+import { supabase } from "@/integrations/supabase/client"; // Added missing import
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
@@ -16,16 +17,19 @@ const PaymentSuccess: React.FC = () => {
       if (!user) return;
 
       try {
-        const { error } = await supabase
-          .from('subscribers')
-          .upsert({
-            user_id: user.id,
-            email: user.email,
-            paid: true,
-            payment_date: new Date().toISOString(),
-          });
+        // Make sure user.id exists before using it
+        if (user.id) {
+          const { error } = await supabase
+            .from('subscribers')
+            .upsert({
+              user_id: user.id,
+              email: user.email,
+              paid: true,
+              payment_date: new Date().toISOString(),
+            });
 
-        if (error) throw error;
+          if (error) throw error;
+        }
         
         toast.success('Payment processed successfully!');
         setTimeout(() => {

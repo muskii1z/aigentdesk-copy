@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ const menuItems: IMenu[] = [
 ];
 
 const Navbar: React.FC = () => {
-  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
+  const { isOpen, setIsOpen, redirectUrl, openModal } = useSignUpModal();
   const navigate = useNavigate();
   const { user } = useQuerify();
 
@@ -35,16 +36,21 @@ const Navbar: React.FC = () => {
 
     // Check if user has paid
     const checkPaymentStatus = async () => {
-      const { data: subscriber } = await supabase
-        .from('subscribers')
-        .select('paid')
-        .eq('user_id', user.id)
-        .single();
+      if (user.id) {
+        const { data: subscriber } = await supabase
+          .from('subscribers')
+          .select('paid')
+          .eq('user_id', user.id)
+          .maybeSingle(); // Using maybeSingle instead of single to avoid errors
 
-      if (!subscriber?.paid) {
-        navigate('/paywall');
+        if (!subscriber?.paid) {
+          navigate('/paywall');
+        } else {
+          navigate('/ask');
+        }
       } else {
-        navigate('/ask');
+        // If user exists but has no ID, redirect to paywall
+        navigate('/paywall');
       }
     };
 

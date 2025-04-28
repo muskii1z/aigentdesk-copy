@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client'; // Fixed import path
 import { useNavigate } from 'react-router-dom';
 
 const QuestionForm: React.FC = () => {
@@ -72,20 +73,27 @@ const QuestionForm: React.FC = () => {
       return;
     }
 
-    const { data: subscriber } = await supabase
-      .from('subscribers')
-      .select('paid')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!subscriber?.paid) {
-      navigate('/paywall');
-      return;
-    }
-
-    setIsLoading(true);
-    
     try {
+      // Only attempt to check subscription status if user exists
+      if (user.id) {
+        const { data: subscriber } = await supabase
+          .from('subscribers')
+          .select('paid')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!subscriber?.paid) {
+          navigate('/paywall');
+          return;
+        }
+      } else {
+        // Handle case where user exists but has no ID
+        navigate('/paywall');
+        return;
+      }
+      
+      setIsLoading(true);
+      
       const webhookResponse = await sendToWebhook(question);
       
       await addQuestion(question, webhookResponse);
@@ -111,7 +119,7 @@ const QuestionForm: React.FC = () => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder={placeholders[0]}
+            placeholder={placeholders ? placeholders[0] : "Ask a question about AI automation"}
             value={question}
             onChange={handleChange}
             className="flex-1 rounded-full"
