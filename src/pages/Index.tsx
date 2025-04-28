@@ -17,6 +17,7 @@ const Index = () => {
         description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
         primaryCta={{
           text: "Get Access",
+          href: "https://buy.stripe.com/test_aEUcOWbTng0d8QodQQ",
           onClick: handleGetAccess,
         }}
         secondaryCta={{
