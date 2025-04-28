@@ -7,6 +7,7 @@ import SignUpModal from '@/components/SignUpModal';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
 import { supabase } from '@/integrations/supabase/client';
+import { CreditCard } from 'lucide-react';
 
 const menuItems: IMenu[] = [
   {
@@ -24,47 +25,30 @@ const menuItems: IMenu[] = [
 ];
 
 const Navbar: React.FC = () => {
-  const { isOpen, setIsOpen, redirectUrl, openModal } = useSignUpModal();
-  const navigate = useNavigate();
+  const { isOpen, setIsOpen } = useSignUpModal();
   const { user } = useQuerify();
 
-  const handleAskClick = () => {
+  const handlePaymentClick = async () => {
     if (!user) {
-      openModal('/ask');
+      setIsOpen(true);
       return;
     }
 
-    // Check if user has paid
-    const checkPaymentStatus = async () => {
-      if (user.id) {
-        const { data: subscriber, error } = await supabase
-          .from('subscribers')
-          .select('paid')
-          .eq('user_id', user.id)
-          .maybeSingle();
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { user_id: user.id },
+      });
 
-        if (error) {
-          console.error('Error checking payment status:', error);
-          navigate('/paywall');
-          return;
-        }
-
-        if (!subscriber?.paid) {
-          navigate('/paywall');
-        } else {
-          navigate('/ask');
-        }
-      } else {
-        // If user exists but has no ID, redirect to paywall
-        navigate('/paywall');
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
       }
-    };
-
-    checkPaymentStatus();
+    } catch (error) {
+      console.error('Payment error:', error);
+    }
   };
 
   const handleSignInClick = () => {
-    // Only allow sign-in mode, don't show sign up option
     setIsOpen(true);
   };
 
@@ -84,27 +68,28 @@ const Navbar: React.FC = () => {
             <Menu list={menuItems} />
           </div>
           <div className="flex items-center gap-3 md:gap-4">
-            <Button 
-              variant="outline"
-              className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
-              onClick={handleSignInClick}
-            >
-              Sign In
-            </Button>
+            {!user && (
+              <Button 
+                variant="outline"
+                className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
+                onClick={handleSignInClick}
+              >
+                Sign In
+              </Button>
+            )}
             <Button 
               className="bg-querify-blue hover:bg-blue-700 text-white hidden md:inline-flex"
-              onClick={handleAskClick}
+              onClick={handlePaymentClick}
             >
-              Ask Questions
+              <CreditCard className="mr-2 h-4 w-4" />
+              Get Access
             </Button>
           </div>
         </div>
       </header>
-      {/* Always force defaultView="sign-in" for Navbar modal, and don't allow sign up toggle */}
       <SignUpModal
         open={isOpen}
         onOpenChange={setIsOpen}
-        redirectUrl={redirectUrl}
         defaultView="sign-in"
         allowRegistration={false}
       />

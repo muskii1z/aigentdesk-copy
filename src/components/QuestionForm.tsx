@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -51,7 +50,6 @@ const QuestionForm: React.FC = () => {
       const responseData = await response.json();
       console.log('Webhook response:', responseData);
       
-      // Extract only the output field from the response
       if (responseData && responseData.output) {
         return responseData.output;
       } else {
@@ -74,33 +72,26 @@ const QuestionForm: React.FC = () => {
     }
 
     try {
-      // Only attempt to check subscription status if user exists
-      if (user.id) {
-        const { data: subscriber, error } = await supabase
-          .from('subscribers')
-          .select('paid')
-          .eq('user_id', user.id)
-          .single();
+      const { data: subscriber, error } = await supabase
+        .from('subscribers')
+        .select('paid')
+        .eq('user_id', user.id)
+        .single();
 
-        if (error) {
-          console.error('Subscription check error:', error);
-          navigate('/paywall');
-          return;
-        }
+      if (error || !subscriber?.paid) {
+        const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
+          body: { user_id: user.id },
+        });
 
-        if (!subscriber?.paid) {
-          navigate('/paywall');
-          return;
+        if (checkoutError) throw checkoutError;
+        if (data?.url) {
+          window.location.href = data.url;
         }
-      } else {
-        navigate('/paywall');
         return;
       }
       
       setIsLoading(true);
-      
       const webhookResponse = await sendToWebhook(question);
-      
       await addQuestion(question, webhookResponse);
       toast.success('Question sent successfully!');
       setQuestion('');
