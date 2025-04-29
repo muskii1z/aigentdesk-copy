@@ -1,1 +1,29 @@
+
 project_id = "akkdibywknlfbcbidtfy"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+
+[db]
+port = 54322
+
+[studio]
+port = 54323
+
+[inbucket]
+port = 54324
+
+[storage]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+
+[realtime]
+enabled = true
+
+[functions.check-subscription]
+verify_jwt = true

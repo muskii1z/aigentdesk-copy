@@ -11,11 +11,15 @@ export type Database = {
     Tables: {
       subscribers: {
         Row: {
+          access_expiration_date: string | null
           created_at: string
           email: string
+          has_access: boolean
           id: string
           paid: boolean
           payment_date: string | null
+          payment_intent_id: string | null
+          payment_status: string | null
           stripe_customer_id: string | null
           subscription_end_date: string | null
           subscription_id: string | null
@@ -27,11 +31,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          access_expiration_date?: string | null
           created_at?: string
           email: string
+          has_access?: boolean
           id?: string
           paid?: boolean
           payment_date?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
           stripe_customer_id?: string | null
           subscription_end_date?: string | null
           subscription_id?: string | null
@@ -43,11 +51,15 @@ export type Database = {
           user_id: string
         }
         Update: {
+          access_expiration_date?: string | null
           created_at?: string
           email?: string
+          has_access?: boolean
           id?: string
           paid?: boolean
           payment_date?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
           stripe_customer_id?: string | null
           subscription_end_date?: string | null
           subscription_id?: string | null

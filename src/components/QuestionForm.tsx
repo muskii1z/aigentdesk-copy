@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   const { addQuestion, user } = useQuerify();
   const { openModal } = useSignUpModal();
   const navigate = useNavigate();
@@ -22,6 +24,38 @@ const QuestionForm: React.FC = () => {
     "Can AI help with customer service automation?",
     "What AI tools are best for small business marketing?",
   ];
+
+  useEffect(() => {
+    // Check subscription status when user is logged in
+    const checkSubscription = async () => {
+      if (!user) return;
+      
+      try {
+        setIsCheckingSubscription(true);
+        const { data, error } = await supabase.functions.invoke('check-subscription');
+        
+        if (error) {
+          console.error('Error checking subscription:', error);
+          return;
+        }
+        
+        if (!data.has_access) {
+          toast.warning('You need to subscribe to ask questions.', {
+            action: {
+              label: 'Subscribe',
+              onClick: () => window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU'
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+      } finally {
+        setIsCheckingSubscription(false);
+      }
+    };
+    
+    checkSubscription();
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
@@ -72,21 +106,21 @@ const QuestionForm: React.FC = () => {
     }
 
     try {
-      const { data: subscriber, error } = await supabase
-        .from('subscribers')
-        .select('paid')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error || !subscriber?.paid) {
-        const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
-          body: { user_id: user.id },
+      // Check subscription status
+      const { data: subData, error: subError } = await supabase.functions.invoke('check-subscription');
+      
+      if (subError) {
+        toast.error('Failed to verify your subscription');
+        return;
+      }
+      
+      if (!subData.has_access) {
+        toast.warning('You need to subscribe to ask questions', {
+          action: {
+            label: 'Subscribe',
+            onClick: () => window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU'
+          }
         });
-
-        if (checkoutError) throw checkoutError;
-        if (data?.url) {
-          window.location.href = data.url;
-        }
         return;
       }
       
@@ -106,7 +140,7 @@ const QuestionForm: React.FC = () => {
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="relative">
-        {isLoading && (
+        {(isLoading || isCheckingSubscription) && (
           <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 rounded-lg">
             <Loader2 className="h-8 w-8 animate-spin text-querify-blue" />
           </div>
@@ -119,10 +153,11 @@ const QuestionForm: React.FC = () => {
             value={question}
             onChange={handleChange}
             className="flex-1 rounded-full"
+            disabled={isLoading || isCheckingSubscription}
           />
           <Button 
             type="submit" 
-            disabled={!question.trim() || isLoading} 
+            disabled={!question.trim() || isLoading || isCheckingSubscription} 
             className="rounded-full"
           >
             <Send className="h-4 w-4" />
