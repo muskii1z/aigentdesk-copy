@@ -8,15 +8,32 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
 });
 const endpointSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET') || '';
 
+// Helper function for enhanced logging
+const logEvent = (step: string, details?: any) => {
+  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
+};
+
 serve(async (req) => {
   const signature = req.headers.get('stripe-signature');
+  
+  logEvent("Webhook received", { 
+    hasSignature: !!signature, 
+    method: req.method,
+    contentType: req.headers.get('content-type')
+  });
+  
   if (!signature) {
+    logEvent("Error: No signature provided");
     return new Response('No signature', { status: 400 });
   }
 
   try {
     const body = await req.text();
+    logEvent("Request body received", { bodyLength: body.length });
+    
     const event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
+    logEvent("Event constructed", { type: event.type });
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') || '',
@@ -27,37 +44,128 @@ serve(async (req) => {
     // Handle subscription events
     switch (event.type) {
       case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-      case 'customer.subscription.deleted': {
+      case 'customer.subscription.updated': {
         const subscription = event.data.object;
         const customerId = subscription.customer as string;
+        
+        logEvent("Processing subscription event", { 
+          eventType: event.type,
+          subscriptionId: subscription.id,
+          subscriptionStatus: subscription.status,
+          customerId
+        });
         
         // Get customer to find email
         const customer = await stripe.customers.retrieve(customerId);
         const email = typeof customer === 'string' ? '' : customer.email || '';
         
+        if (!email) {
+          logEvent("Error: No email found for customer", { customerId });
+          return new Response(JSON.stringify({ error: 'No email found for customer' }), {
+            status: 400, headers: { 'Content-Type': 'application/json' }
+          });
+        }
+        
+        // Set access based on subscription status
+        const hasAccess = subscription.status === 'active' || subscription.status === 'trialing';
+        const paid = hasAccess;
+        
+        // Determine tier based on price if available
+        let subscriptionTier = 'premium'; // Default tier
+        if (subscription.items?.data?.[0]?.price?.id) {
+          const priceId = subscription.items.data[0].price.id;
+          try {
+            const price = await stripe.prices.retrieve(priceId);
+            const amount = price.unit_amount || 0;
+            
+            if (amount <= 999) {
+              subscriptionTier = "Basic";
+            } else if (amount <= 1999) {
+              subscriptionTier = "Premium";
+            } else {
+              subscriptionTier = "Enterprise";
+            }
+            logEvent("Determined subscription tier", { priceId, amount, subscriptionTier });
+          } catch (error) {
+            logEvent("Error retrieving price", { priceId, error: error.message });
+          }
+        }
+        
         // Update subscription status in database
-        await supabaseClient.from('subscribers').upsert({
+        const { data, error } = await supabaseClient.from('subscribers').upsert({
           email,
           stripe_customer_id: customerId,
           subscription_id: subscription.id,
           subscription_status: subscription.status,
-          subscription_tier: 'premium', // Adjust based on your pricing tiers
+          subscription_tier: subscriptionTier,
           subscription_start_date: new Date(subscription.current_period_start * 1000).toISOString(),
           subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
-          cancel_at_period_end: subscription.cancel_at_period_end,
-          last_webhook_received_at: new Date().toISOString(),
-          last_webhook_type: event.type,
-          status_history: supabaseClient.sql`array_append(COALESCE(status_history, '[]'::jsonb), ${JSON.stringify({
-            status: subscription.status,
-            timestamp: new Date().toISOString(),
-            event: event.type
-          })}::jsonb)`
+          paid: paid,
+          has_access: hasAccess,
+          updated_at: new Date().toISOString(),
         }, {
-          onConflict: 'stripe_customer_id'
+          onConflict: 'email'
         });
+        
+        if (error) {
+          logEvent("Error updating subscribers table", { error });
+          return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+            status: 500, headers: { 'Content-Type': 'application/json' }
+          });
+        }
+        
+        logEvent("Subscription record updated", { email, hasAccess, paid, subscriptionTier });
         break;
       }
+      
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object;
+        const customerId = subscription.customer as string;
+        
+        logEvent("Processing subscription deletion", { 
+          subscriptionId: subscription.id,
+          customerId
+        });
+        
+        // Get customer to find email
+        const customer = await stripe.customers.retrieve(customerId);
+        const email = typeof customer === 'string' ? '' : customer.email || '';
+        
+        if (email) {
+          const { data, error } = await supabaseClient.from('subscribers').upsert({
+            email,
+            stripe_customer_id: customerId,
+            subscription_id: subscription.id,
+            subscription_status: 'canceled',
+            paid: false,
+            has_access: false,
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'email'
+          });
+          
+          if (error) {
+            logEvent("Error updating subscription cancellation", { error });
+            return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+              status: 500, headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          
+          logEvent("Subscription cancellation recorded", { email });
+        } else {
+          logEvent("Error: No email found for canceled subscription", { customerId });
+        }
+        break;
+      }
+      
+      case 'payment_intent.succeeded': {
+        // For one-time payments, if needed in the future
+        logEvent("Payment intent succeeded - not currently handled");
+        break;
+      }
+      
+      default:
+        logEvent(`Unhandled event type: ${event.type}`);
     }
 
     return new Response(JSON.stringify({ received: true }), {
@@ -65,7 +173,7 @@ serve(async (req) => {
       status: 200,
     });
   } catch (err) {
-    console.error('Error processing webhook:', err);
+    logEvent("Error processing webhook", { error: err.message, stack: err.stack });
     return new Response(
       JSON.stringify({ error: { message: err.message } }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
