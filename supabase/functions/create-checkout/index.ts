@@ -52,7 +52,7 @@ serve(async (req) => {
         },
       ],
       mode: "subscription", // Ensure this is set to subscription
-      success_url: `${req.headers.get("origin")}/success`,
+      success_url: `${req.headers.get("origin")}/post-payment`,
       cancel_url: `${req.headers.get("origin")}/cancel`,
     });
 
