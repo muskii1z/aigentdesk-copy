@@ -14,7 +14,19 @@ const logEvent = (step: string, details?: any) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
+// CORS headers for the response
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+  
   const signature = req.headers.get('stripe-signature');
   
   logEvent("Webhook received", { 
@@ -25,7 +37,10 @@ serve(async (req) => {
   
   if (!signature) {
     logEvent("Error: No signature provided");
-    return new Response('No signature', { status: 400 });
+    return new Response('No signature', { 
+      status: 400,
+      headers: corsHeaders 
+    });
   }
 
   try {
@@ -41,7 +56,7 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    // Handle subscription events
+    // Handle subscription events and payment events
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
@@ -62,7 +77,8 @@ serve(async (req) => {
         if (!email) {
           logEvent("Error: No email found for customer", { customerId });
           return new Response(JSON.stringify({ error: 'No email found for customer' }), {
-            status: 400, headers: { 'Content-Type': 'application/json' }
+            status: 400, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
         
@@ -110,7 +126,7 @@ serve(async (req) => {
         if (error) {
           logEvent("Error updating subscribers table", { error });
           return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
-            status: 500, headers: { 'Content-Type': 'application/json' }
+            status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
         
@@ -147,7 +163,7 @@ serve(async (req) => {
           if (error) {
             logEvent("Error updating subscription cancellation", { error });
             return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
-              status: 500, headers: { 'Content-Type': 'application/json' }
+              status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
           
@@ -159,8 +175,176 @@ serve(async (req) => {
       }
       
       case 'payment_intent.succeeded': {
-        // For one-time payments, if needed in the future
-        logEvent("Payment intent succeeded - not currently handled");
+        const paymentIntent = event.data.object;
+        logEvent("Payment intent succeeded", { 
+          paymentIntentId: paymentIntent.id,
+          amount: paymentIntent.amount
+        });
+        
+        // Handle one-time payment
+        if (paymentIntent.customer) {
+          // Find customer information
+          const customerId = paymentIntent.customer as string;
+          const customer = await stripe.customers.retrieve(customerId);
+          
+          if (typeof customer !== 'string' && customer.email) {
+            const email = customer.email;
+            logEvent("Updating subscriber for one-time payment", { email, customerId });
+            
+            // Set access period (e.g., 30 days for one-time payment)
+            const startDate = new Date();
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 30); // 30 days access
+            
+            const { data, error } = await supabaseClient.from('subscribers').upsert({
+              email,
+              stripe_customer_id: customerId,
+              payment_intent_id: paymentIntent.id,
+              payment_status: 'succeeded',
+              paid: true,
+              has_access: true,
+              subscription_start_date: startDate.toISOString(),
+              subscription_end_date: endDate.toISOString(), 
+              subscription_tier: 'Premium', // Default for one-time payments
+              updated_at: new Date().toISOString(),
+            }, {
+              onConflict: 'email'
+            });
+            
+            if (error) {
+              logEvent("Error updating one-time payment", { error });
+              return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+                status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+            
+            logEvent("One-time payment recorded", { email });
+          }
+        } else if (paymentIntent.receipt_email) {
+          // Use receipt email if customer ID not available
+          const email = paymentIntent.receipt_email;
+          logEvent("Processing one-time payment with receipt email", { email });
+          
+          // Set access period (e.g., 30 days for one-time payment)
+          const startDate = new Date();
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + 30); // 30 days access
+          
+          const { data, error } = await supabaseClient.from('subscribers').upsert({
+            email,
+            payment_intent_id: paymentIntent.id,
+            payment_status: 'succeeded',
+            paid: true,
+            has_access: true,
+            subscription_start_date: startDate.toISOString(),
+            subscription_end_date: endDate.toISOString(),
+            subscription_tier: 'Premium', // Default for one-time payments
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'email'
+          });
+          
+          if (error) {
+            logEvent("Error updating one-time payment with receipt email", { error });
+            return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+              status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          
+          logEvent("One-time payment with receipt email recorded", { email });
+        } else {
+          // Try to extract email from billing details or customer details
+          let email = null;
+          
+          if (paymentIntent.charges && paymentIntent.charges.data && paymentIntent.charges.data.length > 0) {
+            const charge = paymentIntent.charges.data[0];
+            if (charge.billing_details && charge.billing_details.email) {
+              email = charge.billing_details.email;
+            }
+          }
+          
+          if (!email && paymentIntent.metadata && paymentIntent.metadata.email) {
+            email = paymentIntent.metadata.email;
+          }
+          
+          if (email) {
+            logEvent("Processing one-time payment with extracted email", { email });
+            
+            // Set access period (e.g., 30 days for one-time payment)
+            const startDate = new Date();
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 30); // 30 days access
+            
+            const { data, error } = await supabaseClient.from('subscribers').upsert({
+              email,
+              payment_intent_id: paymentIntent.id,
+              payment_status: 'succeeded',
+              paid: true,
+              has_access: true,
+              subscription_start_date: startDate.toISOString(),
+              subscription_end_date: endDate.toISOString(),
+              subscription_tier: 'Premium', // Default for one-time payments
+              updated_at: new Date().toISOString(),
+            }, {
+              onConflict: 'email'
+            });
+            
+            if (error) {
+              logEvent("Error updating one-time payment with extracted email", { error });
+              return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+                status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+            
+            logEvent("One-time payment with extracted email recorded", { email });
+          } else {
+            logEvent("Could not find email for one-time payment", { paymentIntentId: paymentIntent.id });
+          }
+        }
+        break;
+      }
+      
+      case 'checkout.session.completed': {
+        // Handle checkout session completed events
+        const session = event.data.object;
+        logEvent("Checkout session completed", { 
+          sessionId: session.id,
+          mode: session.mode,
+          paymentStatus: session.payment_status
+        });
+        
+        // If this is a one-time payment checkout
+        if (session.mode === 'payment' && session.payment_status === 'paid' && session.customer_details?.email) {
+          const email = session.customer_details.email;
+          logEvent("Processing completed checkout session for one-time payment", { email });
+          
+          // Set access period (e.g., 30 days for one-time payment)
+          const startDate = new Date();
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + 30); // 30 days access
+          
+          const { data, error } = await supabaseClient.from('subscribers').upsert({
+            email,
+            payment_status: 'succeeded',
+            paid: true,
+            has_access: true,
+            subscription_start_date: startDate.toISOString(),
+            subscription_end_date: endDate.toISOString(),
+            subscription_tier: 'Premium', // Default for one-time payments
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'email'
+          });
+          
+          if (error) {
+            logEvent("Error updating one-time checkout payment", { error });
+            return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+              status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          
+          logEvent("One-time checkout payment recorded", { email });
+        }
         break;
       }
       
@@ -169,14 +353,14 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ received: true }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
   } catch (err) {
     logEvent("Error processing webhook", { error: err.message, stack: err.stack });
     return new Response(
       JSON.stringify({ error: { message: err.message } }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

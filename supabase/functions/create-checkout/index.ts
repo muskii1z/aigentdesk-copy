@@ -36,6 +36,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
+    // Creating a subscription checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -50,7 +51,7 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: "subscription",
+      mode: "subscription", // Ensure this is set to subscription
       success_url: `${req.headers.get("origin")}/success`,
       cancel_url: `${req.headers.get("origin")}/cancel`,
     });

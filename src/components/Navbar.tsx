@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
   const { user } = useQuerify();
 
   const handleGetAccess = () => {
-    window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU';
+    window.location.href = 'https://buy.stripe.com/test_28o6ppcLf7Ee9Rm8wx';
   };
 
   return (
