@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -44,20 +43,127 @@ serve(async (req) => {
   }
 
   try {
-    const body = await req.text();
-    logEvent("Request body received", { bodyLength: body.length });
+    const rawBody = await req.text();
+    logEvent("Request body received", { bodyLength: rawBody.length });
     
-    const event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
+    // Properly verify the signature with the webhook secret
+    const event = stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
     logEvent("Event constructed", { type: event.type });
     
+    // Use the service role key for Supabase operations to bypass RLS
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') || '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
       { auth: { persistSession: false } }
     );
 
-    // Handle subscription events and payment events
+    // Handle different event types
     switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        logEvent("Processing checkout session completed", { 
+          sessionId: session.id,
+          mode: session.mode,
+          paymentStatus: session.payment_status
+        });
+
+        // Extract email from customer_details as recommended
+        const email = session.customer_details?.email;
+        if (!email) {
+          logEvent("Error: No email found in session", { sessionId: session.id });
+          return new Response(JSON.stringify({ error: 'No email found in session' }), {
+            status: 400, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // For subscriptions
+        if (session.mode === 'subscription' && session.subscription) {
+          const subscriptionId = session.subscription as string;
+          
+          // Retrieve detailed subscription data
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+          
+          // Determine tier based on price
+          let subscriptionTier = 'Premium'; // Default tier
+          if (subscription.items?.data?.[0]?.price?.id) {
+            const priceId = subscription.items.data[0].price.id;
+            try {
+              const price = await stripe.prices.retrieve(priceId);
+              const amount = price.unit_amount || 0;
+              
+              if (amount <= 999) {
+                subscriptionTier = "Basic";
+              } else if (amount <= 1999) {
+                subscriptionTier = "Premium";
+              } else {
+                subscriptionTier = "Enterprise";
+              }
+              logEvent("Determined subscription tier", { priceId, amount, subscriptionTier });
+            } catch (error) {
+              logEvent("Error retrieving price", { priceId, error: error.message });
+            }
+          }
+
+          // Calculate subscription end date
+          const subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+          const subscriptionStart = new Date(subscription.current_period_start * 1000).toISOString();
+          
+          // Update or insert subscriber record
+          const { data, error } = await supabaseClient.from('subscribers').upsert({
+            email,
+            stripe_customer_id: session.customer as string,
+            subscription_id: subscriptionId,
+            subscription_status: subscription.status,
+            subscription_tier: subscriptionTier,
+            subscription_start_date: subscriptionStart,
+            subscription_end_date: subscriptionEnd,
+            paid: true,
+            has_access: true,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'email' });
+          
+          if (error) {
+            logEvent("Error updating subscribers for subscription", { error });
+            return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+              status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          
+          logEvent("Subscription completed and recorded", { email, subscriptionTier });
+        } 
+        // For one-time payments
+        else if (session.mode === 'payment' && session.payment_status === 'paid') {
+          // Set access period for one-time payment
+          const startDate = new Date();
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + 30); // 30 days access
+          
+          const { data, error } = await supabaseClient.from('subscribers').upsert({
+            email,
+            stripe_customer_id: session.customer as string,
+            payment_status: 'succeeded',
+            payment_intent_id: session.payment_intent as string,
+            paid: true,
+            has_access: true,
+            subscription_start_date: startDate.toISOString(),
+            subscription_end_date: endDate.toISOString(),
+            subscription_tier: 'Premium', // Default for one-time payments
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'email' });
+          
+          if (error) {
+            logEvent("Error updating one-time payment", { error });
+            return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
+              status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          
+          logEvent("One-time payment recorded", { email });
+        }
+        break;
+      }
+      
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object;
@@ -87,7 +193,7 @@ serve(async (req) => {
         const paid = hasAccess;
         
         // Determine tier based on price if available
-        let subscriptionTier = 'premium'; // Default tier
+        let subscriptionTier = 'Premium'; // Default tier
         if (subscription.items?.data?.[0]?.price?.id) {
           const priceId = subscription.items.data[0].price.id;
           try {
@@ -304,54 +410,11 @@ serve(async (req) => {
         break;
       }
       
-      case 'checkout.session.completed': {
-        // Handle checkout session completed events
-        const session = event.data.object;
-        logEvent("Checkout session completed", { 
-          sessionId: session.id,
-          mode: session.mode,
-          paymentStatus: session.payment_status
-        });
-        
-        // If this is a one-time payment checkout
-        if (session.mode === 'payment' && session.payment_status === 'paid' && session.customer_details?.email) {
-          const email = session.customer_details.email;
-          logEvent("Processing completed checkout session for one-time payment", { email });
-          
-          // Set access period (e.g., 30 days for one-time payment)
-          const startDate = new Date();
-          const endDate = new Date();
-          endDate.setDate(endDate.getDate() + 30); // 30 days access
-          
-          const { data, error } = await supabaseClient.from('subscribers').upsert({
-            email,
-            payment_status: 'succeeded',
-            paid: true,
-            has_access: true,
-            subscription_start_date: startDate.toISOString(),
-            subscription_end_date: endDate.toISOString(),
-            subscription_tier: 'Premium', // Default for one-time payments
-            updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'email'
-          });
-          
-          if (error) {
-            logEvent("Error updating one-time checkout payment", { error });
-            return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
-              status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-          }
-          
-          logEvent("One-time checkout payment recorded", { email });
-        }
-        break;
-      }
-      
       default:
         logEvent(`Unhandled event type: ${event.type}`);
     }
 
+    // Always return a 200 response to acknowledge receipt of the event
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
