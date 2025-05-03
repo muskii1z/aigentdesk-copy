@@ -12,11 +12,10 @@ const Index = () => {
   const { user } = useQuerify();
   
   const handleGetAccess = () => {
-    // For Stripe test mode, use the test checkout URL
-    // In a production environment, you would append ?redirect_to=https://yourdomain.com/welcome
-    // to capture the parameter in the success URL
-    window.location.href = 'https://buy.stripe.com/test_28o6ppcLf7Ee9Rm8wx?success_url=https%3A%2F%2F' + 
-      window.location.host + '%2Fwelcome';
+    // This URL should be replaced with your actual Stripe Payment Link URL
+    // The {CHECKOUT_SESSION:EMAIL} parameter will be replaced by Stripe with the customer's email
+    window.location.href = 'https://buy.stripe.com/test_28o6ppcLf7Ee9Rm8wx?success_url=' + 
+      encodeURIComponent(`${window.location.origin}/signup?email={CHECKOUT_SESSION:EMAIL}`);
   };
 
   return (

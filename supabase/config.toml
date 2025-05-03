@@ -33,3 +33,6 @@ verify_jwt = false
 
 [functions.create-checkout]
 verify_jwt = true
+
+[functions.mark-paid]
+verify_jwt = true

@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import PostPaymentSignup from "./pages/PostPaymentSignup";
+import SignupPage from "./pages/SignupPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/post-payment" element={<PostPaymentSignup />} />
               <Route path="/welcome" element={<PostPaymentSignup />} />
+              <Route path="/signup" element={<SignupPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
