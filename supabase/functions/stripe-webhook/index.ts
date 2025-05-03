@@ -100,6 +100,54 @@ serve(async (req) => {
           });
         }
 
+        // Check if user already exists
+        logEvent("Checking if user exists", { email });
+        const { data: existingUser, error: userLookupError } = await supabaseClient.auth.admin.listUsers({
+          filter: {
+            email: email
+          }
+        });
+
+        let userId = null;
+        
+        // If user doesn't exist, create one
+        if (!existingUser || existingUser.users.length === 0) {
+          logEvent("User not found, creating new account", { email });
+          
+          try {
+            // Create user with email confirmation disabled
+            const { data: newUser, error: createError } = await supabaseClient.auth.admin.createUser({
+              email: email,
+              email_confirm: true, // Skip email verification
+              user_metadata: {
+                payment_confirmed: true
+              }
+            });
+            
+            if (createError) throw createError;
+            if (!newUser) throw new Error("Failed to create user account");
+            
+            userId = newUser.id;
+            logEvent("New user created successfully", { userId, email });
+            
+            // Send invite email to set password
+            const { data: inviteData, error: inviteError } = await supabaseClient.auth.admin.inviteUserByEmail(email);
+            
+            if (inviteError) {
+              logEvent("Error sending invite email", { error: inviteError.message, email });
+            } else {
+              logEvent("Invite email sent successfully", { email });
+            }
+          } catch (error) {
+            logEvent("Error creating user", { error: error.message, email });
+            // Continue with webhook processing even if user creation fails
+            // We'll still create/update the subscriber record
+          }
+        } else {
+          userId = existingUser.users[0].id;
+          logEvent("User already exists", { userId, email });
+        }
+
         // For subscriptions
         if (session.mode === 'subscription' && session.subscription) {
           const subscriptionId = session.subscription as string;
@@ -135,6 +183,7 @@ serve(async (req) => {
           // Update or insert subscriber record
           const { data, error } = await supabaseClient.from('subscribers').upsert({
             email,
+            user_id: userId, // Add user_id from Supabase Auth
             stripe_customer_id: session.customer as string,
             subscription_id: subscriptionId,
             subscription_status: subscription.status,
@@ -177,6 +226,7 @@ serve(async (req) => {
           
           const { data, error } = await supabaseClient.from('subscribers').upsert({
             email,
+            user_id: userId, // Add user_id from Supabase Auth
             stripe_customer_id: session.customer as string,
             payment_status: 'succeeded',
             payment_intent_id: session.payment_intent as string,
@@ -225,6 +275,21 @@ serve(async (req) => {
           });
         }
         
+        // Check if user already exists
+        let userId = null;
+        if (email) {
+          const { data: existingUser, error: userLookupError } = await supabaseClient.auth.admin.listUsers({
+            filter: {
+              email: email
+            }
+          });
+          
+          if (existingUser && existingUser.users.length > 0) {
+            userId = existingUser.users[0].id;
+            logEvent("Found existing user for subscription", { userId, email });
+          }
+        }
+        
         // Set access based on subscription status
         const hasAccess = subscription.status === 'active' || subscription.status === 'trialing';
         const paid = hasAccess;
@@ -253,6 +318,7 @@ serve(async (req) => {
         // Update subscription status in database
         const { data, error } = await supabaseClient.from('subscribers').upsert({
           email,
+          user_id: userId, // Include user_id if available
           stripe_customer_id: customerId,
           subscription_id: subscription.id,
           subscription_status: subscription.status,
@@ -334,6 +400,50 @@ serve(async (req) => {
             const email = customer.email;
             logEvent("Updating subscriber for one-time payment", { email, customerId });
             
+            // Check if user already exists
+            let userId = null;
+            const { data: existingUser, error: userLookupError } = await supabaseClient.auth.admin.listUsers({
+              filter: {
+                email: email
+              }
+            });
+            
+            if (!existingUser || existingUser.users.length === 0) {
+              logEvent("Creating user for one-time payment", { email });
+              
+              try {
+                // Create user with email confirmation disabled
+                const { data: newUser, error: createError } = await supabaseClient.auth.admin.createUser({
+                  email: email,
+                  email_confirm: true, // Skip email verification
+                  user_metadata: {
+                    payment_confirmed: true
+                  }
+                });
+                
+                if (createError) throw createError;
+                if (!newUser) throw new Error("Failed to create user account");
+                
+                userId = newUser.id;
+                logEvent("New user created successfully", { userId, email });
+                
+                // Send invite email to set password
+                const { data: inviteData, error: inviteError } = await supabaseClient.auth.admin.inviteUserByEmail(email);
+                
+                if (inviteError) {
+                  logEvent("Error sending invite email", { error: inviteError.message, email });
+                } else {
+                  logEvent("Invite email sent successfully", { email });
+                }
+              } catch (error) {
+                logEvent("Error creating user", { error: error.message, email });
+                // Continue with processing payment
+              }
+            } else {
+              userId = existingUser.users[0].id;
+              logEvent("Found existing user for payment", { userId, email });
+            }
+            
             // Set access period (e.g., 30 days for one-time payment)
             const startDate = new Date();
             const endDate = new Date();
@@ -341,6 +451,7 @@ serve(async (req) => {
             
             const { data, error } = await supabaseClient.from('subscribers').upsert({
               email,
+              user_id: userId, // Include user_id if available
               stripe_customer_id: customerId,
               payment_intent_id: paymentIntent.id,
               payment_status: 'succeeded',
@@ -368,6 +479,50 @@ serve(async (req) => {
           const email = paymentIntent.receipt_email;
           logEvent("Processing one-time payment with receipt email", { email });
           
+          // Check if user already exists
+          let userId = null;
+          const { data: existingUser, error: userLookupError } = await supabaseClient.auth.admin.listUsers({
+            filter: {
+              email: email
+            }
+          });
+          
+          if (!existingUser || existingUser.users.length === 0) {
+            logEvent("Creating user for one-time payment", { email });
+            
+            try {
+              // Create user with email confirmation disabled
+              const { data: newUser, error: createError } = await supabaseClient.auth.admin.createUser({
+                email: email,
+                email_confirm: true, // Skip email verification
+                user_metadata: {
+                  payment_confirmed: true
+                }
+              });
+              
+              if (createError) throw createError;
+              if (!newUser) throw new Error("Failed to create user account");
+              
+              userId = newUser.id;
+              logEvent("New user created successfully", { userId, email });
+              
+              // Send invite email to set password
+              const { data: inviteData, error: inviteError } = await supabaseClient.auth.admin.inviteUserByEmail(email);
+              
+              if (inviteError) {
+                logEvent("Error sending invite email", { error: inviteError.message, email });
+              } else {
+                logEvent("Invite email sent successfully", { email });
+              }
+            } catch (error) {
+              logEvent("Error creating user", { error: error.message, email });
+              // Continue with processing payment
+            }
+          } else {
+            userId = existingUser.users[0].id;
+            logEvent("Found existing user for payment", { userId, email });
+          }
+          
           // Set access period (e.g., 30 days for one-time payment)
           const startDate = new Date();
           const endDate = new Date();
@@ -375,6 +530,7 @@ serve(async (req) => {
           
           const { data, error } = await supabaseClient.from('subscribers').upsert({
             email,
+            user_id: userId, // Include user_id if available
             payment_intent_id: paymentIntent.id,
             payment_status: 'succeeded',
             paid: true,

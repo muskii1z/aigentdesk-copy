@@ -85,6 +85,22 @@ serve(async (req) => {
                   status: subscription.status,
                   currentPeriodEnd: new Date(subscription.current_period_end * 1000)
                 });
+
+                // Update the subscribers table with the missing association
+                await supabaseClient.from("subscribers").upsert({
+                  email: user.email,
+                  user_id: user.id,
+                  stripe_customer_id: customerId,
+                  subscription_id: subscription.id,
+                  subscription_status: subscription.status,
+                  paid: subscription.status === 'active',
+                  has_access: subscription.status === 'active',
+                  subscription_start_date: new Date(subscription.current_period_start * 1000).toISOString(),
+                  subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
+                  updated_at: new Date().toISOString(),
+                }, { onConflict: 'email' });
+
+                logStep("Updated subscribers table with user_id", { userId: user.id, email: user.email });
               } else {
                 logStep("No active subscriptions found in Stripe");
               }
@@ -97,6 +113,20 @@ serve(async (req) => {
         }
       } else if (subscriberData) {
         logStep("Found subscriber record in database", subscriberData);
+        
+        // If user_id is missing, update it
+        if (!subscriberData.user_id) {
+          const { data, error } = await supabaseClient.from("subscribers").update({
+            user_id: user.id,
+            updated_at: new Date().toISOString()
+          }).eq("email", user.email);
+          
+          if (error) {
+            logStep("Error updating user_id in subscribers table", { error: error.message });
+          } else {
+            logStep("Updated user_id in subscribers table", { userId: user.id, email: user.email });
+          }
+        }
       } else {
         logStep("No subscriber record found in database");
       }
