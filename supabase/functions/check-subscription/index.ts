@@ -59,6 +59,42 @@ serve(async (req) => {
       
       if (subscriberError) {
         logStep("Error fetching subscriber record", { error: subscriberError.message });
+        
+        // Check if the error is because no records were found
+        if (subscriberError.code === "PGRST116") {
+          logStep("No subscriber record found (not even a row)");
+          
+          // Check Stripe directly for this user
+          try {
+            logStep("Checking Stripe directly for customer data");
+            const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+            const customers = await stripe.customers.list({ email: user.email });
+            
+            if (customers.data.length > 0) {
+              const customerId = customers.data[0].id;
+              logStep("Found customer in Stripe", { customerId });
+              
+              // Check for subscriptions
+              const subscriptions = await stripe.subscriptions.list({ customer: customerId });
+              logStep("Subscription data from Stripe", { count: subscriptions.data.length });
+              
+              if (subscriptions.data.length > 0) {
+                const subscription = subscriptions.data[0];
+                logStep("Active subscription found in Stripe", { 
+                  subscriptionId: subscription.id,
+                  status: subscription.status,
+                  currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+                });
+              } else {
+                logStep("No active subscriptions found in Stripe");
+              }
+            } else {
+              logStep("No customer found in Stripe");
+            }
+          } catch (stripeError) {
+            logStep("Error querying Stripe directly", { error: stripeError.message });
+          }
+        }
       } else if (subscriberData) {
         logStep("Found subscriber record in database", subscriberData);
       } else {
@@ -81,6 +117,20 @@ serve(async (req) => {
         subscription_end_date: null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'email' });
+
+      // Verify the record was inserted
+      const { data: verifyData, error: verifyError } = await supabaseClient
+        .from("subscribers")
+        .select("*")
+        .eq("email", user.email)
+        .single();
+        
+      if (verifyError) {
+        logStep("Error verifying subscribers table update", { error: verifyError.message });
+      } else if (verifyData) {
+        logStep("Verified subscriber record creation", { record: verifyData });
+      }
+      
       return new Response(JSON.stringify({ paid: false, has_access: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,

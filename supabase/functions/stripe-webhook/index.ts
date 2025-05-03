@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -57,6 +56,14 @@ serve(async (req) => {
     
     logEvent("Event constructed", { type: event.type });
     
+    // Special debug: check for test email in raw body
+    if (rawBody.includes("msarspro17@gmail.com")) {
+      logEvent("TEST EMAIL FOUND IN WEBHOOK DATA", { 
+        eventType: event.type,
+        eventId: event.id
+      });
+    }
+    
     // Use the service role key for Supabase operations to bypass RLS
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') || '',
@@ -81,6 +88,15 @@ serve(async (req) => {
           return new Response(JSON.stringify({ error: 'No email found in session' }), {
             status: 400, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Special debug for test email
+        if (email === "msarspro17@gmail.com") {
+          logEvent("TEST EMAIL FOUND IN CHECKOUT SESSION", { 
+            sessionId: session.id,
+            mode: session.mode,
+            email
           });
         }
 
@@ -131,10 +147,23 @@ serve(async (req) => {
           }, { onConflict: 'email' });
           
           if (error) {
-            logEvent("Error updating subscribers for subscription", { error });
+            logEvent("Error updating subscribers for subscription", { error, email });
             return new Response(JSON.stringify({ error: `Database error: ${error.message}` }), {
               status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
+          }
+          
+          // Check if the update was successful
+          const { data: verifyData, error: verifyError } = await supabaseClient
+            .from('subscribers')
+            .select('*')
+            .eq('email', email)
+            .single();
+            
+          if (verifyError) {
+            logEvent("Error verifying subscription update", { error: verifyError, email });
+          } else {
+            logEvent("Verified subscription record", { record: verifyData });
           }
           
           logEvent("Subscription completed and recorded", { email, subscriptionTier });
@@ -187,11 +216,12 @@ serve(async (req) => {
         const customer = await stripe.customers.retrieve(customerId);
         const email = typeof customer === 'string' ? '' : customer.email || '';
         
-        if (!email) {
-          logEvent("Error: No email found for customer", { customerId });
-          return new Response(JSON.stringify({ error: 'No email found for customer' }), {
-            status: 400, 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        // Special debug for test email
+        if (email === "msarspro17@gmail.com") {
+          logEvent("TEST EMAIL FOUND IN SUBSCRIPTION EVENT", { 
+            eventType: event.type,
+            subscriptionId: subscription.id,
+            email
           });
         }
         
