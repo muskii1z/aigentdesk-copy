@@ -12,11 +12,10 @@ const Index = () => {
   const { user } = useQuerify();
   
   const handleGetAccess = () => {
-    // This URL should be replaced with your actual Stripe Payment Link URL
-    // The {CHECKOUT_SESSION:EMAIL} parameter will be replaced by Stripe with the customer's email
-    window.location.href = 'https://buy.stripe.com/test_28o6ppcLf7Ee9Rm8wx?success_url=' + 
-      encodeURIComponent(`${window.location.origin}/signup?email={CHECKOUT_SESSION:EMAIL}`);
-  };
+  // Replace this URL with your actual Stripe Payment Link URL
+  window.location.href = 'https://buy.stripe.com/test_00g29ZgNCcxXbDO9AA';
+};
+
 
   return (
     <div className="flex flex-col min-h-screen">
