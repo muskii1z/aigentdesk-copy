@@ -46,6 +46,26 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Check for specific email to debug
+    if (user.email === "msarspro17@gmail.com") {
+      logStep("Found test user", { email: user.email });
+      
+      // Check subscribers table first
+      const { data: subscriberData, error: subscriberError } = await supabaseClient
+        .from("subscribers")
+        .select("*")
+        .eq("email", user.email)
+        .single();
+      
+      if (subscriberError) {
+        logStep("Error fetching subscriber record", { error: subscriberError.message });
+      } else if (subscriberData) {
+        logStep("Found subscriber record in database", subscriberData);
+      } else {
+        logStep("No subscriber record found in database");
+      }
+    }
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
