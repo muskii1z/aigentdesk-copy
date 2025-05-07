@@ -12,10 +12,9 @@ const Index = () => {
   const { user } = useQuerify();
   
   const handleGetAccess = () => {
-  // Replace this URL with your actual Stripe Payment Link URL
-  window.location.href = 'https://buy.stripe.com/test_00g29ZgNCcxXbDO9AA';
-};
-
+    // Instead of using a URL with a variable, redirect directly to Stripe payment page
+    window.location.href = 'https://buy.stripe.com/test_00g29ZgNCcxXbDO9AA';
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
