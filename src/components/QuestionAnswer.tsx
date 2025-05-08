@@ -1,15 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuerify } from '@/context/QuerifyContext';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageCircle, Bot } from 'lucide-react';
+import { MessageCircle, Bot, UserPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import SignUpModal from './SignUpModal';
 import ReactMarkdown from 'react-markdown';
 
 const QuestionAnswer: React.FC = () => {
   const { questions, user, isRegistrationRequired } = useQuerify();
-  const [showSignUpModal, setShowSignUpModal] = React.useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
   if (questions.length === 0) {
     return (
@@ -17,10 +18,23 @@ const QuestionAnswer: React.FC = () => {
         <CardContent className="p-6">
           {isRegistrationRequired && !user ? (
             <div className="flex flex-col items-center space-y-4">
-              <p className="text-center">Please sign in to see your conversation history.</p>
-              <SignUpModal
-                open={showSignUpModal}
-                onOpenChange={setShowSignUpModal}
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-blue-700 mb-2">Sign up to get AI answers</h3>
+                <p className="text-sm text-blue-600 mb-4">
+                  Create a free account to ask questions and see expert AI responses.
+                </p>
+              </div>
+              <Button 
+                onClick={() => setShowSignUpModal(true)} 
+                className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto"
+                size="lg"
+              >
+                <UserPlus className="h-4 w-4" />
+                Create Account
+              </Button>
+              <SignUpModal 
+                open={showSignUpModal} 
+                onOpenChange={setShowSignUpModal} 
               />
             </div>
           ) : (
@@ -37,7 +51,7 @@ const QuestionAnswer: React.FC = () => {
         <MessageCircle className="h-5 w-5" />
         Your Conversation
       </h2>
-
+      
       {questions.map((item) => (
         <Card key={item.id} className="animate-fade-in">
           <CardHeader className="bg-secondary/30 py-4">
@@ -54,11 +68,22 @@ const QuestionAnswer: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="py-4">
-            {!user && isRegistrationRequired ? (
+            {isRegistrationRequired && !user ? (
               <div className="flex flex-col items-center p-6 bg-blue-50 rounded-md space-y-4">
-                <p className="text-center font-medium text-blue-800">
-                  Please sign in to view answers to your questions
-                </p>
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-blue-700 mb-2">Sign up to view your answer</h3>
+                  <p className="text-sm text-blue-600 mb-4">
+                    Create a free account to see the answers to your questions.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => setShowSignUpModal(true)} 
+                  className="bg-querify-blue hover:bg-blue-700 flex items-center gap-2 w-full md:w-auto"
+                  size="lg"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Create Account
+                </Button>
               </div>
             ) : (
               <div className="flex items-start gap-3">

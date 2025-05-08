@@ -10,10 +10,6 @@ import Index from "./pages/Index";
 import AskPage from "./pages/AskPage";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import PostPaymentSignup from "./pages/PostPaymentSignup";
-import SignupPage from "./pages/SignupPage";
 
 const queryClient = new QueryClient();
 
@@ -29,11 +25,6 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/ask" element={<AskPage />} />
               <Route path="/about" element={<About />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/post-payment" element={<PostPaymentSignup />} />
-              <Route path="/welcome" element={<PostPaymentSignup />} />
-              <Route path="/signup" element={<SignupPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

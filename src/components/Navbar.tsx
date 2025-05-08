@@ -1,12 +1,10 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Menu, { IMenu } from '@/components/ui/menu';
 import SignUpModal from '@/components/SignUpModal';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
-import { useQuerify } from '@/context/QuerifyContext';
-import { supabase } from '@/integrations/supabase/client';
 
 const menuItems: IMenu[] = [
   {
@@ -21,20 +19,14 @@ const menuItems: IMenu[] = [
     url: '/about',
     dropdown: false,
   },
-  {
-    id: 3,
-    title: 'Account',
-    url: '/account',
-    dropdown: false,
-  }
 ];
 
 const Navbar: React.FC = () => {
-  const { isOpen, setIsOpen } = useSignUpModal();
-  const { user } = useQuerify();
+  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
+  const navigate = useNavigate();
 
-  const handleGetAccess = () => {
-    window.location.href = 'https://buy.stripe.com/test_28o6ppcLf7Ee9Rm8wx';
+  const handleAskClick = () => {
+    navigate('/ask');
   };
 
   return (
@@ -45,29 +37,34 @@ const Navbar: React.FC = () => {
             <Link to="/" className="flex items-center">
               <div className="font-bold text-xl md:text-2xl text-querify-blue">AIgentDesk</div>
             </Link>
+            
             <div className="hidden md:inline-block font-medium text-querify-blue text-sm py-1 px-3 rounded-md bg-querify-blue/5 border border-querify-blue/10">
               Powered by AIgentic Bros
             </div>
           </div>
+
           <div className="hidden md:flex flex-1 justify-center">
             <Menu list={menuItems} />
           </div>
+
           <div className="flex items-center gap-3 md:gap-4">
             <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white"
-              onClick={handleGetAccess}
+              variant="outline"
+              className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
+              onClick={() => setIsOpen(true)}
             >
-              Get Access
+              Sign In
+            </Button>
+            <Button 
+              className="bg-querify-blue hover:bg-blue-700 text-white hidden md:inline-flex"
+              onClick={handleAskClick}
+            >
+              Ask Questions
             </Button>
           </div>
         </div>
       </header>
-      <SignUpModal
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        defaultView="sign-in"
-        allowRegistration={true}
-      />
+      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} defaultView="sign-in" />
     </>
   );
 };

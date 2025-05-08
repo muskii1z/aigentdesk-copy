@@ -10,7 +10,6 @@ interface Question {
 }
 
 interface User {
-  id?: string;
   fullName: string;
   email: string;
   phone: string;
@@ -39,7 +38,7 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [questions, setQuestions] = useState<Question[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
-  // Optional registration
+  // Ensure registration is required
   const isRegistrationRequired = true;
 
   const getRandomAnswer = () => {

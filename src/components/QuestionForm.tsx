@@ -1,21 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useSignUpModal } from '@/hooks/useSignUpModal';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 
 const QuestionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   const { addQuestion, user } = useQuerify();
   const { openModal } = useSignUpModal();
-  const navigate = useNavigate();
 
   const placeholders = [
     "How can AI automation streamline my business operations?",
@@ -24,38 +20,6 @@ const QuestionForm: React.FC = () => {
     "Can AI help with customer service automation?",
     "What AI tools are best for small business marketing?",
   ];
-
-  useEffect(() => {
-    // Check subscription status when user is logged in
-    const checkSubscription = async () => {
-      if (!user) return;
-      
-      try {
-        setIsCheckingSubscription(true);
-        const { data, error } = await supabase.functions.invoke('check-subscription');
-        
-        if (error) {
-          console.error('Error checking subscription:', error);
-          return;
-        }
-        
-        if (!data.has_access) {
-          toast.warning('You need to subscribe to ask questions.', {
-            action: {
-              label: 'Subscribe',
-              onClick: () => window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU'
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error checking subscription:', error);
-      } finally {
-        setIsCheckingSubscription(false);
-      }
-    };
-    
-    checkSubscription();
-  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
@@ -84,6 +48,7 @@ const QuestionForm: React.FC = () => {
       const responseData = await response.json();
       console.log('Webhook response:', responseData);
       
+      // Extract only the output field from the response
       if (responseData && responseData.output) {
         return responseData.output;
       } else {
@@ -100,32 +65,22 @@ const QuestionForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    if (!question.trim()) return;
+    
+    // Check if user is logged in
     if (!user) {
+      // If not logged in, open the sign-up modal
       openModal('/ask');
       return;
     }
-
+    
+    setIsLoading(true);
+    
     try {
-      // Check subscription status
-      const { data: subData, error: subError } = await supabase.functions.invoke('check-subscription');
-      
-      if (subError) {
-        toast.error('Failed to verify your subscription');
-        return;
-      }
-      
-      if (!subData.has_access) {
-        toast.warning('You need to subscribe to ask questions', {
-          action: {
-            label: 'Subscribe',
-            onClick: () => window.location.href = 'https://buy.stripe.com/test_9AQfZZh1v8Ii6FaeUU'
-          }
-        });
-        return;
-      }
-      
-      setIsLoading(true);
+      // Send to webhook and wait for response
       const webhookResponse = await sendToWebhook(question);
+      
+      // Add question and the webhook response to the context
       await addQuestion(question, webhookResponse);
       toast.success('Question sent successfully!');
       setQuestion('');
@@ -140,7 +95,7 @@ const QuestionForm: React.FC = () => {
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="relative">
-        {(isLoading || isCheckingSubscription) && (
+        {isLoading && (
           <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10 rounded-lg">
             <Loader2 className="h-8 w-8 animate-spin text-querify-blue" />
           </div>
@@ -149,15 +104,14 @@ const QuestionForm: React.FC = () => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder={placeholders ? placeholders[0] : "Ask a question about AI automation"}
+            placeholder={placeholders[0]}
             value={question}
             onChange={handleChange}
             className="flex-1 rounded-full"
-            disabled={isLoading || isCheckingSubscription}
           />
           <Button 
             type="submit" 
-            disabled={!question.trim() || isLoading || isCheckingSubscription} 
+            disabled={!question.trim() || isLoading} 
             className="rounded-full"
           >
             <Send className="h-4 w-4" />

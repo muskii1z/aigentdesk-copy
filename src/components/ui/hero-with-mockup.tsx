@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Mockup } from "@/components/ui/mockup"
 import { Glow } from "@/components/ui/glow"
 import { Link } from "react-router-dom"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 interface HeroWithMockupProps {
   title: string
   description: string
   primaryCta?: {
     text: string
-    href?: string
+    href: string
     onClick?: () => void
   }
   secondaryCta?: {
@@ -49,20 +48,20 @@ export function HeroWithMockup({
     <section
       className={cn(
         "relative bg-background text-foreground",
-        "py-8 px-4 md:py-16 lg:py-24",
+        "py-12 px-4 md:py-24 lg:py-32",
         "overflow-hidden",
         className,
       )}
     >
-      <div className="relative mx-auto max-w-[1280px] flex flex-col gap-8 lg:gap-16">
-        <div className="relative z-10 flex flex-col items-center gap-6 text-center">
+      <div className="relative mx-auto max-w-[1280px] flex flex-col gap-12 lg:gap-24">
+        <div className="relative z-10 flex flex-col items-center gap-6 pt-8 md:pt-16 text-center lg:gap-12">
           {/* Heading */}
           <h1
             className={cn(
               "inline-block animate-appear",
               "bg-gradient-to-b from-querify-blue via-querify-blue/90 to-querify-lightBlue",
               "bg-clip-text text-transparent",
-              "text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl",
+              "text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl",
               "leading-[1.1] sm:leading-[1.1]",
               "drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]",
             )}
@@ -117,7 +116,7 @@ export function HeroWithMockup({
                   "px-10 py-7 text-lg font-medium"
                 )}
               >
-                <Link to={primaryCta.href!}>{primaryCta.text}</Link>
+                <Link to={primaryCta.href}>{primaryCta.text}</Link>
               </Button>
             )}
 
@@ -153,31 +152,29 @@ export function HeroWithMockup({
               </Button>
             )}
           </div>
-        </div>
 
-        {/* Video or Custom Content */}
-        {renderCustomContent ? (
-          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 animate-appear opacity-0 [animation-delay:400ms]">
-            {renderCustomContent()}
-          </div>
-        ) : (
-          <div className="relative w-full max-w-5xl mx-auto pt-8 px-4 sm:px-6 lg:px-8">
-            <Mockup
-              className={cn(
-                "animate-appear opacity-0 [animation-delay:700ms]",
-                "shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]",
-                "border-querify-blue/10",
-              )}
-            >
-              <img
-                {...mockupImage}
-                className="w-full h-auto"
-                loading="lazy"
-                decoding="async"
-              />
-            </Mockup>
-          </div>
-        )}
+          {/* Mockup or Custom Content */}
+          {renderCustomContent ? (
+            renderCustomContent()
+          ) : (
+            <div className="relative w-full pt-12 px-4 sm:px-6 lg:px-8">
+              <Mockup
+                className={cn(
+                  "animate-appear opacity-0 [animation-delay:700ms]",
+                  "shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]",
+                  "border-querify-blue/10",
+                )}
+              >
+                <img
+                  {...mockupImage}
+                  className="w-full h-auto"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </Mockup>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Background Glow */}

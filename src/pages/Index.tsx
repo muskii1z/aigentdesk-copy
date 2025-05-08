@@ -2,18 +2,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
-import { useQuerify } from '@/context/QuerifyContext';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useQuerify();
-  
-  const handleGetAccess = () => {
-    // Instead of using a URL with a variable, redirect directly to Stripe payment page
-    window.location.href = 'https://buy.stripe.com/test_00g29ZgNCcxXbDO9AA';
+
+  const handleAskClick = () => {
+    navigate('/ask');
   };
 
   return (
@@ -22,12 +17,13 @@ const Index = () => {
         title="Answer Your AI Automation Questions"
         description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
         primaryCta={{
-          text: "Get Access",
-          onClick: handleGetAccess
+          text: "Ask Your Questions",
+          href: "/ask",
+          onClick: handleAskClick,
         }}
         secondaryCta={{
           text: "Learn More",
-          href: "/about"
+          href: "/about",
         }}
         mockupImage={{
           alt: "AIgentDesk interface",
@@ -37,21 +33,41 @@ const Index = () => {
         }}
         className="bg-gradient-to-br from-blue-50 to-white hero-pattern"
         renderCustomContent={() => (
-          <div className="w-full max-w-3xl mx-auto animate-appear opacity-0 [animation-delay:500ms]">
-            <AspectRatio ratio={16 / 9} className="bg-black rounded-xl overflow-hidden">
+          <div className="w-full pt-12 px-4 sm:px-6 lg:px-8 flex justify-center">
+            <div className="w-full max-w-3xl aspect-video rounded-xl overflow-hidden shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)] border border-querify-blue/10 bg-black animate-appear opacity-0 [animation-delay:700ms]">
               <iframe
+                width="100%"
+                height="100%"
                 src="https://www.youtube.com/embed/UX-R-PkjE84?rel=0&modestbranding=1&controls=1&showinfo=0"
                 title="AIgentDesk Introduction"
+                frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 className="w-full h-full"
-              />
-            </AspectRatio>
+              ></iframe>
+            </div>
           </div>
         )}
       />
+
+      <section className="py-16 bg-blue-50/30">
+        <div className="container max-w-screen-xl text-center">
+          <h2 className="text-3xl font-bold mb-4 text-querify-blue">Ready to Automate with AI?</h2>
+          <p className="text-lg text-querify-blue/80 mb-8 max-w-2xl mx-auto">
+            Start asking your AI automation questions today and transform your business.
+          </p>
+          <Button 
+            className="bg-querify-blue hover:bg-blue-700 text-white px-16 py-8 text-xl font-medium w-72"
+            onClick={handleAskClick}
+            size="lg"
+          >
+            Get Started Now
+          </Button>
+        </div>
+      </section>
     </div>
   );
 };
 
 export default Index;
+

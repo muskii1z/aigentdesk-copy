@@ -9,69 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      subscribers: {
-        Row: {
-          access_expiration_date: string | null
-          created_at: string
-          email: string
-          has_access: boolean
-          id: string
-          paid: boolean
-          payment_date: string | null
-          payment_intent_id: string | null
-          payment_status: string | null
-          stripe_customer_id: string | null
-          subscription_end_date: string | null
-          subscription_id: string | null
-          subscription_price_id: string | null
-          subscription_start_date: string | null
-          subscription_status: string | null
-          subscription_tier: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          access_expiration_date?: string | null
-          created_at?: string
-          email: string
-          has_access?: boolean
-          id?: string
-          paid?: boolean
-          payment_date?: string | null
-          payment_intent_id?: string | null
-          payment_status?: string | null
-          stripe_customer_id?: string | null
-          subscription_end_date?: string | null
-          subscription_id?: string | null
-          subscription_price_id?: string | null
-          subscription_start_date?: string | null
-          subscription_status?: string | null
-          subscription_tier?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          access_expiration_date?: string | null
-          created_at?: string
-          email?: string
-          has_access?: boolean
-          id?: string
-          paid?: boolean
-          payment_date?: string | null
-          payment_intent_id?: string | null
-          payment_status?: string | null
-          stripe_customer_id?: string | null
-          subscription_end_date?: string | null
-          subscription_id?: string | null
-          subscription_price_id?: string | null
-          subscription_start_date?: string | null
-          subscription_status?: string | null
-          subscription_tier?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
