@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Menu, { IMenu } from '@/components/ui/menu';
-import SignUpModal from '@/components/SignUpModal';
-import { useSignUpModal } from '@/hooks/useSignUpModal';
+import SignupCheckoutModal from '@/components/SignupCheckoutModal';
+import { useQuerify } from '@/context/QuerifyContext';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from 'sonner';
 
 const menuItems: IMenu[] = [
   {
@@ -22,11 +24,74 @@ const menuItems: IMenu[] = [
 ];
 
 const Navbar: React.FC = () => {
-  const { isOpen, setIsOpen, redirectUrl } = useSignUpModal();
   const navigate = useNavigate();
+  const { user } = useQuerify();
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
-  const handleAskClick = () => {
-    navigate('/ask');
+  const handleGetStarted = async () => {
+    // If no user is authenticated, open signup modal
+    if (!user) {
+      setIsSignupModalOpen(true);
+      return;
+    }
+
+    // If user exists, check their subscription status
+    setIsCheckingSubscription(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        setIsSignupModalOpen(true);
+        return;
+      }
+
+      // Check subscription status
+      const { data: subData, error: subError } = await supabase.functions.invoke('verify-subscription', {
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
+
+      if (subError) {
+        console.error('Subscription check error:', subError);
+        toast.error('Error checking subscription status');
+        return;
+      }
+
+      if (subData?.subscribed) {
+        // User has subscription, go to ask page
+        navigate('/ask');
+      } else {
+        // User exists but no subscription, create checkout
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('signup-checkout', {
+          body: { email: user.email, password: 'existing-user' },
+          headers: {
+            Authorization: `Bearer ${session.session.access_token}`,
+          },
+        });
+
+        if (checkoutError) {
+          console.error('Checkout error:', checkoutError);
+          toast.error('Error creating checkout session');
+          return;
+        }
+
+        if (checkoutData?.url) {
+          window.location.href = checkoutData.url;
+        }
+      }
+    } catch (error) {
+      console.error('Error in handleGetStarted:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsCheckingSubscription(false);
+    }
+  };
+
+  const getButtonText = () => {
+    if (isCheckingSubscription) return 'Checking...';
+    if (user) return 'Go to App';
+    return 'Get Started';
   };
 
   return (
@@ -49,22 +114,20 @@ const Navbar: React.FC = () => {
 
           <div className="flex items-center gap-3 md:gap-4">
             <Button 
-              variant="outline"
-              className="text-querify-blue border-querify-blue hover:bg-querify-blue/5"
-              onClick={() => setIsOpen(true)}
+              className="bg-querify-blue hover:bg-blue-700 text-white"
+              onClick={handleGetStarted}
+              disabled={isCheckingSubscription}
             >
-              Sign In
-            </Button>
-            <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white hidden md:inline-flex"
-              onClick={handleAskClick}
-            >
-              Ask Questions
+              {getButtonText()}
             </Button>
           </div>
         </div>
       </header>
-      <SignUpModal open={isOpen} onOpenChange={setIsOpen} redirectUrl={redirectUrl} defaultView="sign-in" />
+      
+      <SignupCheckoutModal 
+        open={isSignupModalOpen} 
+        onOpenChange={setIsSignupModalOpen} 
+      />
     </>
   );
 };

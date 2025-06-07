@@ -1,6 +1,8 @@
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { toast } from 'sonner';
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from '@supabase/supabase-js';
 
 interface Question {
   id: string;
@@ -9,7 +11,7 @@ interface Question {
   timestamp: Date;
 }
 
-interface User {
+interface QuerifyUser {
   fullName: string;
   email: string;
   phone: string;
@@ -17,10 +19,13 @@ interface User {
 
 interface QuerifyContextType {
   questions: Question[];
-  user: User | null;
+  user: QuerifyUser | null;
+  isAuthenticated: boolean;
+  isSubscribed: boolean;
   addQuestion: (question: string, answer: string) => Promise<void>;
-  registerUser: (user: User) => void;
+  registerUser: (user: QuerifyUser) => void;
   resetQuestions: () => void;
+  checkSubscriptionStatus: () => Promise<void>;
   isRegistrationRequired: boolean;
 }
 
@@ -36,9 +41,11 @@ const mockAnswers = [
 
 export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<QuerifyUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  // Ensure registration is required
+  // Always require registration
   const isRegistrationRequired = true;
 
   const getRandomAnswer = () => {
@@ -50,14 +57,14 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
     const newQuestion: Question = {
       id: Date.now().toString(),
       question,
-      answer: answer || getRandomAnswer(), // Use provided answer or fallback to random
+      answer: answer || getRandomAnswer(),
       timestamp: new Date()
     };
 
     setQuestions(prev => [newQuestion, ...prev]);
   };
 
-  const registerUser = (userData: User) => {
+  const registerUser = (userData: QuerifyUser) => {
     setUser(userData);
     toast.success("Registration successful! You can now see all answers to your questions.");
   };
@@ -65,17 +72,86 @@ export const QuerifyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const resetQuestions = () => {
     setQuestions([]);
     setUser(null);
-    toast.success("Logged out successfully");
+    setIsAuthenticated(false);
+    setIsSubscribed(false);
   };
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session?.session) {
+        setIsAuthenticated(false);
+        setIsSubscribed(false);
+        setUser(null);
+        return;
+      }
+
+      setIsAuthenticated(true);
+      
+      // Set user info from session
+      const authUser = session.session.user;
+      if (authUser) {
+        setUser({
+          fullName: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+          email: authUser.email || '',
+          phone: authUser.user_metadata?.phone || ''
+        });
+      }
+
+      // Check subscription status
+      const { data: subData, error: subError } = await supabase.functions.invoke('verify-subscription', {
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
+
+      if (!subError && subData) {
+        setIsSubscribed(subData.subscribed || false);
+      }
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+    }
+  };
+
+  // Check auth state on mount and auth changes
+  useEffect(() => {
+    checkSubscriptionStatus();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
+      if (session?.user) {
+        setIsAuthenticated(true);
+        setUser({
+          fullName: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          phone: session.user.user_metadata?.phone || ''
+        });
+        
+        // Check subscription status for authenticated users
+        await checkSubscriptionStatus();
+      } else {
+        setIsAuthenticated(false);
+        setIsSubscribed(false);
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <QuerifyContext.Provider
       value={{
         questions,
         user,
+        isAuthenticated,
+        isSubscribed,
         addQuestion,
         registerUser,
         resetQuestions,
+        checkSubscriptionStatus,
         isRegistrationRequired
       }}
     >

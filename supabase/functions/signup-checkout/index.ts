@@ -33,23 +33,42 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Step 1: Create the user account
-    console.log('[SIGNUP-CHECKOUT] Creating user account...');
-    const { data: authData, error: authError } = await supabaseAuth.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: undefined // Disable email verification for immediate access
+    let userId;
+    let userEmail = email;
+
+    // Check if this is an existing user (password will be 'existing-user' for existing users)
+    if (password === 'existing-user') {
+      // This is an existing user, try to get their info from auth header
+      const authHeader = req.headers.get("Authorization");
+      if (authHeader) {
+        const token = authHeader.replace("Bearer ", "");
+        const { data: userData, error: userError } = await supabaseService.auth.getUser(token);
+        if (!userError && userData.user) {
+          userId = userData.user.id;
+          userEmail = userData.user.email || email;
+          console.log(`[SIGNUP-CHECKOUT] Using existing user: ${userId}`);
+        }
       }
-    });
-    if (authError) {
-      console.error('[SIGNUP-CHECKOUT] Auth error:', authError);
-      throw new Error(`Failed to create account: ${authError.message}`);
+    } else {
+      // Step 1: Create the user account
+      console.log('[SIGNUP-CHECKOUT] Creating user account...');
+      const { data: authData, error: authError } = await supabaseAuth.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: undefined // Disable email verification for immediate access
+        }
+      });
+      if (authError) {
+        console.error('[SIGNUP-CHECKOUT] Auth error:', authError);
+        throw new Error(`Failed to create account: ${authError.message}`);
+      }
+      if (!authData.user) {
+        throw new Error('Failed to create user account');
+      }
+      userId = authData.user.id;
+      console.log(`[SIGNUP-CHECKOUT] User account created: ${userId}`);
     }
-    if (!authData.user) {
-      throw new Error('Failed to create user account');
-    }
-    console.log(`[SIGNUP-CHECKOUT] User account created: ${authData.user.id}`);
 
     // Step 2: Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -60,7 +79,7 @@ serve(async (req) => {
     console.log('[SIGNUP-CHECKOUT] Setting up Stripe customer...');
     let customerId;
     const existingCustomers = await stripe.customers.list({
-       email: email,
+       email: userEmail,
        limit: 1
      });
     if (existingCustomers.data.length > 0) {
@@ -68,9 +87,9 @@ serve(async (req) => {
       console.log(`[SIGNUP-CHECKOUT] Found existing customer: ${customerId}`);
     } else {
       const newCustomer = await stripe.customers.create({
-        email: email,
+        email: userEmail,
         metadata: {
-          user_id: authData.user.id
+          user_id: userId
         }
       });
       customerId = newCustomer.id;
@@ -86,8 +105,8 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "Premium Course Access",
-              description: "Monthly subscription to premium course content"
+              name: "Premium AI Automation Access",
+              description: "Monthly subscription to AI automation guidance and tools"
             },
             unit_amount: 4900, // $49.00
             recurring: {
@@ -98,10 +117,10 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${req.headers.get("origin")}/ask?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}?canceled=true`,
       metadata: {
-        user_id: authData.user.id
+        user_id: userId
       }
     });
     console.log(`[SIGNUP-CHECKOUT] Checkout session created: ${session.id}`);
@@ -111,8 +130,8 @@ serve(async (req) => {
     const { error: subscriberError } = await supabaseService
       .from("subscribers")
       .upsert({
-        user_id: authData.user.id,
-        email: email,
+        user_id: userId,
+        email: userEmail,
         stripe_customer_id: customerId,
         subscribed: false, // Will be updated by webhook when payment completes
         updated_at: new Date().toISOString(),
@@ -130,7 +149,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
          url: session.url,
-        user_id: authData.user.id,
+        user_id: userId,
         session_id: session.id
       }),
       {
@@ -144,8 +163,8 @@ serve(async (req) => {
       JSON.stringify({ error: error.message }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
-  }
+      status: 500,
+    }
+  );
+}
 });
