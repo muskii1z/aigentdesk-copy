@@ -1,1 +1,14 @@
+
 project_id = "xdnuwpbkbwpioxdeddkz"
+
+[functions.signup-checkout]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.verify-subscription]
+verify_jwt = true
+
+[functions.verify-session]
+verify_jwt = false
