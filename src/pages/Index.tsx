@@ -14,7 +14,7 @@ const Index = () => {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
-  const handleGetStarted = async () => {
+  const handleSignUp = async () => {
     // If no user is authenticated, open signup modal
     if (!user) {
       setIsSignupModalOpen(true);
@@ -66,7 +66,7 @@ const Index = () => {
         }
       }
     } catch (error) {
-      console.error('Error in handleGetStarted:', error);
+      console.error('Error in handleSignUp:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
       setIsCheckingSubscription(false);
@@ -76,7 +76,7 @@ const Index = () => {
   const getButtonText = () => {
     if (isCheckingSubscription) return 'Checking...';
     if (user) return 'Continue to App';
-    return 'Get Started';
+    return 'Sign up';
   };
 
   return (
@@ -88,7 +88,7 @@ const Index = () => {
           primaryCta={{
             text: getButtonText(),
             href: "#",
-            onClick: handleGetStarted,
+            onClick: handleSignUp,
           }}
           secondaryCta={{
             text: "Learn More",
@@ -127,7 +127,7 @@ const Index = () => {
             </p>
             <Button 
               className="bg-querify-blue hover:bg-blue-700 text-white px-16 py-8 text-xl font-medium w-72"
-              onClick={handleGetStarted}
+              onClick={handleSignUp}
               disabled={isCheckingSubscription}
               size="lg"
             >

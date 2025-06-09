@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Menu, { IMenu } from '@/components/ui/menu';
 import SignupCheckoutModal from '@/components/SignupCheckoutModal';
+import SignUpModal from '@/components/SignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
@@ -27,21 +28,23 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useQuerify();
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isSigninModalOpen, setIsSigninModalOpen] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
-  const handleGetStarted = async () => {
-    // If no user is authenticated, open signup modal
-    if (!user) {
-      setIsSignupModalOpen(true);
-      return;
-    }
+  const handleSignUp = () => {
+    setIsSignupModalOpen(true);
+  };
 
-    // If user exists, check their subscription status
+  const handleSignIn = () => {
+    setIsSigninModalOpen(true);
+  };
+
+  const handleGoToApp = async () => {
     setIsCheckingSubscription(true);
     try {
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session) {
-        setIsSignupModalOpen(true);
+        setIsSigninModalOpen(true);
         return;
       }
 
@@ -81,17 +84,11 @@ const Navbar: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Error in handleGetStarted:', error);
+      console.error('Error in handleGoToApp:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
       setIsCheckingSubscription(false);
     }
-  };
-
-  const getButtonText = () => {
-    if (isCheckingSubscription) return 'Checking...';
-    if (user) return 'Go to App';
-    return 'Get Started';
   };
 
   return (
@@ -113,13 +110,31 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 md:gap-4">
-            <Button 
-              className="bg-querify-blue hover:bg-blue-700 text-white"
-              onClick={handleGetStarted}
-              disabled={isCheckingSubscription}
-            >
-              {getButtonText()}
-            </Button>
+            {user ? (
+              <Button 
+                className="bg-querify-blue hover:bg-blue-700 text-white"
+                onClick={handleGoToApp}
+                disabled={isCheckingSubscription}
+              >
+                {isCheckingSubscription ? 'Checking...' : 'Go to App'}
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  variant="outline"
+                  className="border-querify-blue text-querify-blue hover:bg-querify-blue hover:text-white"
+                  onClick={handleSignIn}
+                >
+                  Sign in
+                </Button>
+                <Button 
+                  className="bg-querify-blue hover:bg-blue-700 text-white"
+                  onClick={handleSignUp}
+                >
+                  Sign up
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -127,6 +142,12 @@ const Navbar: React.FC = () => {
       <SignupCheckoutModal 
         open={isSignupModalOpen} 
         onOpenChange={setIsSignupModalOpen} 
+      />
+      
+      <SignUpModal 
+        open={isSigninModalOpen} 
+        onOpenChange={setIsSigninModalOpen}
+        defaultView="sign-in"
       />
     </>
   );
