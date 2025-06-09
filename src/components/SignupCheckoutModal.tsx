@@ -119,7 +119,7 @@ const SignupCheckoutModal: React.FC<SignupCheckoutModalProps> = ({ open, onOpenC
             className="w-full bg-querify-blue hover:bg-blue-700" 
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Creating Account...' : 'Create Account & Subscribe ($49/month)'}
+            {isSubmitting ? 'Creating Account...' : 'Create Account & Subscribe ($15/month)'}
           </Button>
         </form>
 
@@ -128,7 +128,7 @@ const SignupCheckoutModal: React.FC<SignupCheckoutModalProps> = ({ open, onOpenC
           <a className="underline hover:no-underline" href="#">
             Terms of Service
           </a>{" "}
-          and will be charged $49/month after your free trial.
+          and will be charged $15/month after your free trial.
         </p>
       </DialogContent>
     </Dialog>

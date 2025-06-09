@@ -108,7 +108,7 @@ serve(async (req) => {
               name: "Premium AI Automation Access",
               description: "Monthly subscription to AI automation guidance and tools"
             },
-            unit_amount: 4900, // $49.00
+            unit_amount: 1500, // $15.00
             recurring: {
               interval: "month",
             },
