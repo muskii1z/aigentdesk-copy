@@ -9,27 +9,35 @@ import { useQuerify } from '@/context/QuerifyContext';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 
-const menuItems: IMenu[] = [
-  {
-    id: 1,
-    title: 'Home',
-    url: '/',
-    dropdown: false,
-  },
-  {
-    id: 2,
-    title: 'About',
-    url: '/about',
-    dropdown: false,
-  },
-];
-
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useQuerify();
+  const { user, isAuthenticated, isSubscribed } = useQuerify();
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isSigninModalOpen, setIsSigninModalOpen] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
+
+  // Dynamic menu items based on user status
+  const menuItems: IMenu[] = [
+    {
+      id: 1,
+      title: 'Home',
+      url: '/',
+      dropdown: false,
+    },
+    {
+      id: 2,
+      title: 'About',
+      url: '/about',
+      dropdown: false,
+    },
+    // Add Ask menu item for authenticated and subscribed users
+    ...(isAuthenticated && isSubscribed ? [{
+      id: 3,
+      title: 'Ask',
+      url: '/ask',
+      dropdown: false,
+    }] : []),
+  ];
 
   const handleSignUp = () => {
     setIsSignupModalOpen(true);
@@ -91,6 +99,10 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const handleAskQuestions = () => {
+    navigate('/ask');
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/30">
@@ -111,13 +123,24 @@ const Navbar: React.FC = () => {
 
           <div className="flex items-center gap-3 md:gap-4">
             {user ? (
-              <Button 
-                className="bg-querify-blue hover:bg-blue-700 text-white"
-                onClick={handleGoToApp}
-                disabled={isCheckingSubscription}
-              >
-                {isCheckingSubscription ? 'Checking...' : 'Go to App'}
-              </Button>
+              <>
+                {isSubscribed ? (
+                  <Button 
+                    className="bg-querify-blue hover:bg-blue-700 text-white"
+                    onClick={handleAskQuestions}
+                  >
+                    Ask Questions
+                  </Button>
+                ) : (
+                  <Button 
+                    className="bg-querify-blue hover:bg-blue-700 text-white"
+                    onClick={handleGoToApp}
+                    disabled={isCheckingSubscription}
+                  >
+                    {isCheckingSubscription ? 'Checking...' : 'Go to App'}
+                  </Button>
+                )}
+              </>
             ) : (
               <>
                 <Button 
