@@ -142,17 +142,18 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ open, onOpenChange, redirectU
           </form>
         )}
 
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={toggleMode}
-            className="text-sm text-muted-foreground hover:text-foreground underline"
-          >
-            {isSignIn 
-              ? "Don't have an account? Sign up" 
-              : "Already have an account? Sign in"}
-          </button>
-        </div>
+        {/* Only show toggle option for sign-up mode, not sign-in mode */}
+        {!isSignIn && (
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-sm text-muted-foreground hover:text-foreground underline"
+            >
+              Already have an account? Sign in
+            </button>
+          </div>
+        )}
 
         <p className="text-center text-xs text-muted-foreground">
           By using this service you agree to our{" "}
