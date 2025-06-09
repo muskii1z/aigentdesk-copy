@@ -13,13 +13,7 @@ const QuestionAnswer: React.FC = () => {
     return (
       <Card className="bg-muted/30">
         <CardContent className="p-6">
-          {isRegistrationRequired && !user ? (
-            <p className="text-muted-foreground text-center">
-              Please sign in using the buttons in the navigation bar to ask questions and see responses.
-            </p>
-          ) : (
-            <p className="text-muted-foreground text-center">Ask your first question to see responses here</p>
-          )}
+          <p className="text-muted-foreground text-center">Ask your first question to see responses here</p>
         </CardContent>
       </Card>
     );
