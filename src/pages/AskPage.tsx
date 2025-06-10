@@ -81,8 +81,7 @@ const AskPage = () => {
         {user && (
           <div className="flex justify-between items-center mb-8">
             <div className="text-sm text-slate-600">
-              Welcome back, {user.fullName}! 
-              {isSubscribed && <span className="text-green-600 ml-2">✓ Premium Active</span>}
+              Welcome back, {user.fullName}!
             </div>
             <Button 
               variant="outline" 
