@@ -2,81 +2,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
-import { useNavigate } from 'react-router-dom';
 import SignupCheckoutModal from '@/components/SignupCheckoutModal';
-import { useQuerify } from '@/context/QuerifyContext';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from 'sonner';
 
 const Index = () => {
-  const navigate = useNavigate();
-  const { user } = useQuerify();
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
-  const handleSignUp = async () => {
-    // If no user is authenticated, open signup modal
-    if (!user) {
-      setIsSignupModalOpen(true);
-      return;
-    }
-
-    // If user exists, check their subscription status
-    setIsCheckingSubscription(true);
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session) {
-        setIsSignupModalOpen(true);
-        return;
-      }
-
-      // Check subscription status
-      const { data: subData, error: subError } = await supabase.functions.invoke('verify-subscription', {
-        headers: {
-          Authorization: `Bearer ${session.session.access_token}`,
-        },
-      });
-
-      if (subError) {
-        console.error('Subscription check error:', subError);
-        toast.error('Error checking subscription status');
-        return;
-      }
-
-      if (subData?.subscribed) {
-        // User has subscription, go to ask page
-        navigate('/ask');
-      } else {
-        // User exists but no subscription, create checkout
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('signup-checkout', {
-          body: { email: user.email, password: 'existing-user' },
-          headers: {
-            Authorization: `Bearer ${session.session.access_token}`,
-          },
-        });
-
-        if (checkoutError) {
-          console.error('Checkout error:', checkoutError);
-          toast.error('Error creating checkout session');
-          return;
-        }
-
-        if (checkoutData?.url) {
-          window.location.href = checkoutData.url;
-        }
-      }
-    } catch (error) {
-      console.error('Error in handleSignUp:', error);
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setIsCheckingSubscription(false);
-    }
-  };
-
-  const getButtonText = () => {
-    if (isCheckingSubscription) return 'Checking...';
-    if (user) return 'Continue to App';
-    return 'Sign up';
+  const handleSignUp = () => {
+    setIsSignupModalOpen(true);
   };
 
   return (
@@ -86,7 +18,7 @@ const Index = () => {
           title="Answer Your AI Automation Questions"
           description="AIgentDesk provides expert answers to all your AI automation questions, helping you implement intelligent solutions."
           primaryCta={{
-            text: getButtonText(),
+            text: "Sign up",
             href: "#",
             onClick: handleSignUp,
           }}
@@ -128,10 +60,9 @@ const Index = () => {
             <Button 
               className="bg-querify-blue hover:bg-blue-700 text-white px-16 py-8 text-xl font-medium w-72"
               onClick={handleSignUp}
-              disabled={isCheckingSubscription}
               size="lg"
             >
-              {getButtonText()}
+              Sign up
             </Button>
           </div>
         </section>
