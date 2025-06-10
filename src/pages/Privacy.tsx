@@ -39,7 +39,7 @@ const Privacy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-querify-blue mb-4">Contact Us</h2>
             <p className="text-slate-600">
-              If you have any questions about this Privacy Policy, please contact us at support@aigentdesk.com
+              If you have any questions about this Privacy Policy, please contact us at hamza.saraswatai@aigenticbros.com
             </p>
           </section>
         </div>
