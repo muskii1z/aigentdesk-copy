@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -29,6 +30,9 @@ const QuestionForm: React.FC = () => {
       const webhookUrl = 'http://localhost:5678/webhook/c3abe09f-5c95-4711-9b74-da4bd64f722a/chat';
       console.log(`Sending question to webhook: ${webhookUrl}`);
       
+      // Use user's email as sessionId for chat memory
+      const sessionId = user?.email || 'anonymous';
+      
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -36,7 +40,8 @@ const QuestionForm: React.FC = () => {
         },
         body: JSON.stringify({ 
           question: questionText,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          sessionId: sessionId 
         }),
       });
       
