@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from 'react-router-dom';
 
 const AskPage = () => {
-  const { user, isSubscribed, resetQuestions, checkSubscriptionStatus } = useQuerify();
+  const { user, resetQuestions, checkSubscriptionStatus } = useQuerify();
   const [searchParams] = useSearchParams();
   
   const handleLogout = async () => {
@@ -52,28 +52,6 @@ const AskPage = () => {
       verifyPayment();
     }
   }, [searchParams, checkSubscriptionStatus]);
-
-  // Show subscription required message if user is authenticated but not subscribed
-  if (user && !isSubscribed) {
-    return (
-      <div className="container max-w-screen-xl py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-8">
-            Subscription Required
-          </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-8">
-            You need an active subscription to access AI automation guidance.
-          </p>
-          <Button 
-            onClick={() => window.location.href = '/'}
-            className="bg-querify-blue hover:bg-blue-700"
-          >
-            Get Started
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container max-w-screen-xl py-16">
