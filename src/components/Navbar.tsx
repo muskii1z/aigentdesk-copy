@@ -6,15 +6,12 @@ import Menu, { IMenu } from '@/components/ui/menu';
 import SignupCheckoutModal from '@/components/SignupCheckoutModal';
 import SignUpModal from '@/components/SignUpModal';
 import { useQuerify } from '@/context/QuerifyContext';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from 'sonner';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, isSubscribed } = useQuerify();
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isSigninModalOpen, setIsSigninModalOpen] = useState(false);
-  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
   // Dynamic menu items based on user status
   const menuItems: IMenu[] = [
@@ -47,58 +44,6 @@ const Navbar: React.FC = () => {
     setIsSigninModalOpen(true);
   };
 
-  const handleGoToApp = async () => {
-    setIsCheckingSubscription(true);
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session) {
-        setIsSigninModalOpen(true);
-        return;
-      }
-
-      // Check subscription status
-      const { data: subData, error: subError } = await supabase.functions.invoke('verify-subscription', {
-        headers: {
-          Authorization: `Bearer ${session.session.access_token}`,
-        },
-      });
-
-      if (subError) {
-        console.error('Subscription check error:', subError);
-        toast.error('Error checking subscription status');
-        return;
-      }
-
-      if (subData?.subscribed) {
-        // User has subscription, go to ask page
-        navigate('/ask');
-      } else {
-        // User exists but no subscription, create checkout
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('signup-checkout', {
-          body: { email: user.email, password: 'existing-user' },
-          headers: {
-            Authorization: `Bearer ${session.session.access_token}`,
-          },
-        });
-
-        if (checkoutError) {
-          console.error('Checkout error:', checkoutError);
-          toast.error('Error creating checkout session');
-          return;
-        }
-
-        if (checkoutData?.url) {
-          window.location.href = checkoutData.url;
-        }
-      }
-    } catch (error) {
-      console.error('Error in handleGoToApp:', error);
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setIsCheckingSubscription(false);
-    }
-  };
-
   const handleAskQuestions = () => {
     navigate('/ask');
   };
@@ -123,24 +68,12 @@ const Navbar: React.FC = () => {
 
           <div className="flex items-center gap-3 md:gap-4">
             {user ? (
-              <>
-                {isSubscribed ? (
-                  <Button 
-                    className="bg-querify-blue hover:bg-blue-700 text-white"
-                    onClick={handleAskQuestions}
-                  >
-                    Ask Questions
-                  </Button>
-                ) : (
-                  <Button 
-                    className="bg-querify-blue hover:bg-blue-700 text-white"
-                    onClick={handleGoToApp}
-                    disabled={isCheckingSubscription}
-                  >
-                    {isCheckingSubscription ? 'Checking...' : 'Go to App'}
-                  </Button>
-                )}
-              </>
+              <Button 
+                className="bg-querify-blue hover:bg-blue-700 text-white"
+                onClick={handleAskQuestions}
+              >
+                Ask Questions
+              </Button>
             ) : (
               <>
                 <Button 
