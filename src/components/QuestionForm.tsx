@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -27,7 +26,7 @@ const QuestionForm: React.FC = () => {
 
   const sendToWebhook = async (questionText: string) => {
     try {
-      const webhookUrl = 'http://localhost:5678/webhook/6735c7d2-1412-44aa-8312-b5e5d8bc3f83';
+      const webhookUrl = 'http://localhost:5678/webhook/c3abe09f-5c95-4711-9b74-da4bd64f722a/chat';
       console.log(`Sending question to webhook: ${webhookUrl}`);
       
       const response = await fetch(webhookUrl, {
