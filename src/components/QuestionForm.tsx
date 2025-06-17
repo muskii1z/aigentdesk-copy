@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -30,20 +31,34 @@ const QuestionForm: React.FC = () => {
       const webhookUrl = 'http://localhost:5678/webhook/c3abe09f-5c95-4711-9b74-da4bd64f722a/chat';
       console.log(`Sending question to webhook: ${webhookUrl}`);
       
-      // Use user's email as sessionId for chat memory
-      const sessionId = user?.email || 'anonymous';
+      // Debug logging for user object
+      console.log('User object:', user);
+      console.log('User email:', user?.email);
+      
+      // Create sessionId with multiple fallbacks and debugging
+      let sessionId = user?.email || `user_${Date.now()}` || 'anonymous';
+      console.log('Generated sessionId:', sessionId);
+      
+      // Create the payload
+      const payload = { 
+        question: questionText,
+        timestamp: new Date().toISOString(),
+        sessionId: sessionId 
+      };
+      
+      // Debug logging for the complete payload
+      console.log('Complete payload being sent:', JSON.stringify(payload, null, 2));
       
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          question: questionText,
-          timestamp: new Date().toISOString(),
-          sessionId: sessionId 
-        }),
+        body: JSON.stringify(payload),
       });
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         throw new Error(`Webhook request failed with status: ${response.status}`);
@@ -131,3 +146,4 @@ const QuestionForm: React.FC = () => {
 };
 
 export default QuestionForm;
+
