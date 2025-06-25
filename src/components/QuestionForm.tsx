@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import { Loader2, Send } from 'lucide-react';
@@ -28,7 +26,7 @@ const QuestionForm: React.FC = () => {
 
   const sendToWebhook = async (questionText: string) => {
     try {
-      const webhookUrl = 'http://localhost:5678/webhook/c3abe09f-5c95-4711-9b74-da4bd64f722a/chat';
+      const webhookUrl = 'https://digitalvaultsolutions.app.n8n.cloud/webhook/c3abe09f-5c95-4711-9b74-da4bd64f722a/chat';
       console.log(`Sending question to webhook: ${webhookUrl}`);
       
       // Debug logging for user object
@@ -146,4 +144,3 @@ const QuestionForm: React.FC = () => {
 };
 
 export default QuestionForm;
-
