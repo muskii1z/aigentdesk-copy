@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
+import SignUpModal from '@/components/SignUpModal';
 
 interface SignupCheckoutModalProps {
   open: boolean;
@@ -22,6 +23,7 @@ interface SignupCheckoutModalProps {
 const SignupCheckoutModal: React.FC<SignupCheckoutModalProps> = ({ open, onOpenChange }) => {
   const id = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSigninModalOpen, setIsSigninModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,67 +73,90 @@ const SignupCheckoutModal: React.FC<SignupCheckoutModalProps> = ({ open, onOpenC
     }
   };
 
+  const handleExistingCustomer = () => {
+    onOpenChange(false);
+    setIsSigninModalOpen(true);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <div className="flex flex-col items-center gap-2">
-          <div className="text-3xl font-bold text-querify-blue">
-            AI
-          </div>
-          <DialogHeader>
-            <DialogTitle className="sm:text-center">Get Started with AI Automation 🚀</DialogTitle>
-            <DialogDescription className="sm:text-center">
-              Create your account and get instant access to premium AI automation guidance.
-              Start asking your questions today!
-            </DialogDescription>
-          </DialogHeader>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor={`${id}-email`}>Email</Label>
-              <Input 
-                id={`${id}-email`} 
-                name="email"
-                placeholder="john@example.com" 
-                type="email" 
-                required 
-                disabled={isSubmitting}
-              />
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <div className="flex flex-col items-center gap-2">
+            <div className="text-3xl font-bold text-querify-blue">
+              AI
             </div>
-            <div className="space-y-2">
-              <Label htmlFor={`${id}-password`}>Password</Label>
-              <Input 
-                id={`${id}-password`} 
-                name="password"
-                placeholder="••••••••" 
-                type="password" 
-                required 
-                minLength={6}
-                disabled={isSubmitting}
-              />
-            </div>
+            <DialogHeader>
+              <DialogTitle className="sm:text-center">Get Started with AI Automation 🚀</DialogTitle>
+              <DialogDescription className="sm:text-center">
+                Create your account and get instant access to premium AI automation guidance.
+                Start asking your questions today!
+              </DialogDescription>
+            </DialogHeader>
           </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-querify-blue hover:bg-blue-700" 
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Creating Account...' : 'Create Account & Subscribe ($15/month)'}
-          </Button>
-        </form>
 
-        <p className="text-center text-xs text-muted-foreground">
-          By continuing, you agree to our{" "}
-          <a className="underline hover:no-underline" href="#">
-            Terms of Service
-          </a>{" "}
-          and will be charged $15/month after your free trial.
-        </p>
-      </DialogContent>
-    </Dialog>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-email`}>Email</Label>
+                <Input 
+                  id={`${id}-email`} 
+                  name="email"
+                  placeholder="john@example.com" 
+                  type="email" 
+                  required 
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-password`}>Password</Label>
+                <Input 
+                  id={`${id}-password`} 
+                  name="password"
+                  placeholder="••••••••" 
+                  type="password" 
+                  required 
+                  minLength={6}
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-querify-blue hover:bg-blue-700" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating Account...' : 'Create Account & Subscribe ($15/month)'}
+            </Button>
+          </form>
+
+          <div className="text-center">
+            <button
+              onClick={handleExistingCustomer}
+              className="text-sm text-querify-blue hover:underline"
+              type="button"
+            >
+              Existing Customer? Sign In
+            </button>
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground">
+            By continuing, you agree to our{" "}
+            <a className="underline hover:no-underline" href="#">
+              Terms of Service
+            </a>{" "}
+            and will be charged $15/month after your free trial.
+          </p>
+        </DialogContent>
+      </Dialog>
+      
+      <SignUpModal 
+        open={isSigninModalOpen} 
+        onOpenChange={setIsSigninModalOpen}
+        defaultView="sign-in"
+      />
+    </>
   );
 };
 

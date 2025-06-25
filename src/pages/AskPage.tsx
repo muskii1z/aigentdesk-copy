@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuerify } from '@/context/QuerifyContext';
 import QuestionForm from '@/components/QuestionForm';
 import QuestionAnswer from '@/components/QuestionAnswer';
@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const AskPage = () => {
-  const { user, resetQuestions, checkSubscriptionStatus } = useQuerify();
+  const { user, resetQuestions, checkSubscriptionStatus, isAuthenticated, isSubscribed } = useQuerify();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -52,6 +54,37 @@ const AskPage = () => {
       verifyPayment();
     }
   }, [searchParams, checkSubscriptionStatus]);
+
+  // Protect the page - redirect if not authenticated or not subscribed
+  useEffect(() => {
+    const checkAccess = async () => {
+      if (!isAuthenticated) {
+        toast.error("Please sign up to access AIgentDesk");
+        navigate('/');
+        return;
+      }
+
+      if (!isSubscribed) {
+        toast.error("Please complete your subscription to access AIgentDesk");
+        navigate('/');
+        return;
+      }
+
+      setIsLoading(false);
+    };
+
+    checkAccess();
+  }, [isAuthenticated, isSubscribed, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="container max-w-screen-xl py-16">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="text-lg">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-screen-xl py-16">

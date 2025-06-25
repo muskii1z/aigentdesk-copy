@@ -18,7 +18,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSuccess, redirectUrl }) => {
   const id = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { registerUser } = useQuerify();
+  const { registerUser, checkSubscriptionStatus } = useQuerify();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,11 +44,32 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSuccess, redirectUrl }) => {
           phone: ''
         });
         
-        toast.success("Signed in successfully!");
-        onSuccess?.();
+        // Check subscription status after sign in
+        await checkSubscriptionStatus();
         
-        if (redirectUrl) {
-          navigate(redirectUrl);
+        // Verify subscription status before allowing access
+        const { data: subData, error: subError } = await supabase.functions.invoke('verify-subscription', {
+          headers: {
+            Authorization: `Bearer ${data.session.access_token}`,
+          },
+        });
+
+        if (!subError && subData?.subscribed) {
+          toast.success("Signed in successfully!");
+          onSuccess?.();
+          
+          if (redirectUrl) {
+            navigate(redirectUrl);
+          }
+        } else {
+          // User is authenticated but doesn't have an active subscription
+          toast.error("Your subscription has expired or payment is incomplete. Please complete your subscription to continue.");
+          
+          // Sign out the user since they don't have a valid subscription
+          await supabase.auth.signOut();
+          
+          // You could redirect to a payment completion page here
+          // For now, we'll just prevent access
         }
       }
     } catch (error: any) {
